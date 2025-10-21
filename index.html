@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fake Twitch Chat Overlay — magician67kay</title>
+  <style>
+    :root{
+      --overlay-width: 36vw;
+      --overlay-height: 62vh;
+      --bg: rgba(18,18,20,0.75);
+      --accent: rgba(120,63,255,0.9);
+    }
+    html,body{height:100%;margin:0;font-family:Segoe UI, Roboto, Arial, sans-serif;background:transparent}
+    #chat-overlay{position:fixed;top:12px;left:12px;width:var(--overlay-width);height:var(--overlay-height);z-index:999999;display:flex;flex-direction:column;gap:8px;user-select:none}
+    .chat-card{background:linear-gradient(180deg, rgba(28,28,30,0.92), var(--bg));backdrop-filter: blur(6px);border-radius:12px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6);color:#e6e6e6;display:flex;flex-direction:column;height:100%;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+    .chat-messages{overflow:hidden;position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:8px;}
+    .msg{display:flex;gap:6px;font-size:14px;animation:fadeIn 0.25s ease-out}
+    .username{font-weight:600}
+    .donation{color:#ffcc00;font-weight:700}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+  <div id="chat-overlay">
+    <div class="chat-card">
+      <div style="font-size:13px;margin-bottom:4px;font-weight:600;">magician67kay — LIVE (simulated)</div>
+      <div id="messages" class="chat-messages"></div>
+      <div style="font-size:11px;color:#aaa;">Fictional — not affiliated with Twitch or Kai Cenat</div>
+    </div>
+  </div>
+  <script>
+    const messagesEl = document.getElementById('messages');
+
+    // generate random usernames dynamically
+    const prefixes = ['xX','The','Lil','Big','Pro','Epic','OG','TTV_','YT_','Mr','Its','Real'];
+    const middles = ['Kai','Cenat','Viewer','Ghost','Rage','Slayer','King','Sniper','Donk','Meme','Lurker','WSpam','Pog','Cheer','Spammy'];
+    const suffixes = ['_69','420','LOL','XD','God','999','_TV','_YT','123','zzz','_onTop','Prime'];
+    function randomUsername(){
+      return prefixes[Math.floor(Math.random()*prefixes.length)] +
+             middles[Math.floor(Math.random()*middles.length)] +
+             suffixes[Math.floor(Math.random()*suffixes.length)];
+    }
+
+    const sampleMsgs = [
+      'BROOO 💀','LMAOOOO','🔥🔥🔥','W STREAM','NAHHHH','NO WAY 💀','HE DID NOTTT','SPAM THE Ws','WTF DID I JUST SEE','THIS STREAM IS CRAZY','BROOOO 😭','STOPPPP 😂','HE BUGGED 💀','CHAT I CANT','NO SHOT 😳','LAGGGGG','YOOOOO','😂😂😂','BRO YOU TRIPPIN','💀💀💀'
+    ];
+
+    const donations = [
+      ()=>({user:randomUsername(),amount:5,message:'Just a lil something for the chaos 😂'}),
+      ()=>({user:randomUsername(),amount:10,message:'Bro answer my math question: if 5 fish drown how many left?'}),
+      ()=>({user:randomUsername(),amount:20,message:'For every W moment 💯🔥'}),
+      ()=>({user:randomUsername(),amount:2,message:'You’re actually built like a potato fr 🥔'}),
+      ()=>({user:randomUsername(),amount:50,message:'LMAO my cat just turned off the monitor 😭'})
+    ];
+
+    function nameColor(name){let h=0;for(let i=0;i<name.length;i++){h=(h<<5)-h+name.charCodeAt(i)}return `hsl(${Math.abs(h)%360},90%,65%)`}
+
+    function pushMsg(user,text,isDonation=false,amount=0){
+      const el=document.createElement('div');
+      el.className='msg';
+      const u=document.createElement('span');
+      u.className='username';
+      u.style.color=nameColor(user);
+      u.textContent=user+': ';
+      const m=document.createElement('span');
+      if(isDonation){
+        m.className='donation';
+        m.textContent=`donated $${amount}: ${text}`;
+        playCheer();
+      } else {
+        m.textContent=text;
+      }
+      el.appendChild(u);
+      el.appendChild(m);
+      messagesEl.appendChild(el);
+      messagesEl.scrollTop=messagesEl.scrollHeight;
+      if(messagesEl.children.length>100){messagesEl.removeChild(messagesEl.firstChild)}
+    }
+
+    function chatLoop(){
+      if(Math.random()<0.1){
+        const d=(rnd(donations))();
+        pushMsg(d.user,d.message,true,d.amount);
+      } else {
+        pushMsg(randomUsername(),rnd(sampleMsgs));
+      }
+    }
+
+    function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
+    setInterval(chatLoop,800);
+
+    function playCheer(){
+      const ctx=new (window.AudioContext||window.webkitAudioContext)();
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.type='triangle';
+      osc.frequency.value=880;
+      osc.connect(gain);gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.1,ctx.currentTime);
+      osc.start();osc.stop(ctx.currentTime+0.3);
+    }
+  </script>
+</body>
+</html>
