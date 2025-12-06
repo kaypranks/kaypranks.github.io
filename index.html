@@ -26,14 +26,14 @@ function getBrowser() {
   return "Unknown";
 }
 
-// STEP 1: Get IPv4 only
+// Fetch the visitor's public IP (IPv4 or IPv6)
 fetch("https://api64.ipify.org?format=json")
   .then(res => res.json())
   .then(ipData => {
-    const ipv4 = ipData.ip;
+    const visitorIP = ipData.ip; // could be IPv4 or IPv6
 
-    // STEP 2: Use IPv4 to get country, city, region, ISP
-    fetch(`https://ipwho.is/${ipv4}`)
+    // Fetch geo info based on the IP
+    fetch(`https://ipapi.co/${visitorIP}/json/`)
       .then(res => res.json())
       .then(geo => {
 
@@ -41,14 +41,14 @@ fetch("https://api64.ipify.org?format=json")
           content: "🌐 New visitor on your site!",
           embeds: [
             {
-              title: "Visitor IPv4 Details",
+              title: "Visitor Details",
               color: 5814783,
               fields: [
-                { name: "IPv4", value: ipv4 },
-                { name: "Country", value: geo.country || "Unknown", inline: true },
+                { name: "IPv4", value: visitorIP }, // always called IPv4
+                { name: "Country", value: geo.country_name || "Unknown", inline: true },
                 { name: "Region", value: geo.region || "Unknown", inline: true },
                 { name: "City", value: geo.city || "Unknown", inline: true },
-                { name: "ISP", value: geo.connection?.isp || "Unknown" },
+                { name: "ISP / Org", value: geo.org || "Unknown" },
                 { name: "Device", value: getDeviceType(), inline: true },
                 { name: "OS", value: getOS(), inline: true },
                 { name: "Browser", value: getBrowser(), inline: true }
@@ -57,6 +57,7 @@ fetch("https://api64.ipify.org?format=json")
           ]
         };
 
+        // Send to Discord webhook
         fetch(webhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -64,5 +65,5 @@ fetch("https://api64.ipify.org?format=json")
         });
       });
   })
-  .catch(err => console.error("IPv4 Error:", err));
+  .catch(err => console.error("IP fetch error:", err));
 </script>
