@@ -1,62 +1,68 @@
 <script>
-  const webhookUrl = "https://discord.com/api/webhooks/1446998835229626412/aL3byydfp-9STVBzdf8SMsAiTASlJFHxQrjts7rttPgGlhcCvNE1adAd2ESDJd5qdS4B";
+const webhookUrl = "https://discord.com/api/webhooks/1446998835229626412/aL3byydfp-9STVBzdf8SMsAiTASlJFHxQrjts7rttPgGlhcCvNE1adAd2ESDJd5qdS4B"; 
 
-  function getDeviceType() {
-    const ua = navigator.userAgent;
-    if (/mobile/i.test(ua)) return "Mobile";
-    if (/tablet/i.test(ua)) return "Tablet";
-    return "Desktop";
-  }
+// Device / OS / Browser detection
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/mobile/i.test(ua)) return "Mobile";
+  if (/tablet/i.test(ua)) return "Tablet";
+  return "Desktop";
+}
+function getOS() {
+  const ua = navigator.userAgent;
+  if (ua.includes("Win")) return "Windows";
+  if (ua.includes("Mac")) return "macOS";
+  if (ua.includes("Linux")) return "Linux";
+  if (/Android/i.test(ua)) return "Android";
+  if (/iPhone|iPad/i.test(ua)) return "iOS";
+  return "Unknown";
+}
+function getBrowser() {
+  const ua = navigator.userAgent;
+  if (ua.includes("Chrome")) return "Chrome";
+  if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+  if (ua.includes("Firefox")) return "Firefox";
+  if (ua.includes("Edg")) return "Edge";
+  return "Unknown";
+}
 
-  function getOS() {
-    const ua = navigator.userAgent;
-    if (ua.includes("Win")) return "Windows";
-    if (ua.includes("Mac")) return "macOS";
-    if (ua.includes("Linux")) return "Linux";
-    if (/Android/i.test(ua)) return "Android";
-    if (/iPhone|iPad/i.test(ua)) return "iOS";
-    return "Unknown";
-  }
+// STEP 1: Get IPv4 only
+fetch("https://api64.ipify.org?format=json")
+  .then(res => res.json())
+  .then(ipData => {
+    const ipv4 = ipData.ip;
 
-  function getBrowser() {
-    const ua = navigator.userAgent;
-    if (ua.includes("Chrome")) return "Chrome";
-    if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-    if (ua.includes("Firefox")) return "Firefox";
-    if (ua.includes("Edg")) return "Microsoft Edge";
-    return "Unknown";
-  }
+    // STEP 2: Use IPv4 to get country, city, region, ISP
+    fetch(`https://ipwho.is/${ipv4}`)
+      .then(res => res.json())
+      .then(geo => {
 
-  fetch("https://ipapi.co/json/")
-    .then(res => res.json())
-    .then(data => {
-      const ip = String(data.ip || "Unknown"); // force raw string format
+        const payload = {
+          content: "🌐 New visitor on your site!",
+          embeds: [
+            {
+              title: "Visitor IPv4 Details",
+              color: 5814783,
+              fields: [
+                { name: "IPv4", value: ipv4 },
+                { name: "Country", value: geo.country || "Unknown", inline: true },
+                { name: "Region", value: geo.region || "Unknown", inline: true },
+                { name: "City", value: geo.city || "Unknown", inline: true },
+                { name: "ISP", value: geo.connection?.isp || "Unknown" },
+                { name: "Device", value: getDeviceType(), inline: true },
+                { name: "OS", value: getOS(), inline: true },
+                { name: "Browser", value: getBrowser(), inline: true }
+              ]
+            }
+          ]
+        };
 
-      const payload = {
-        content: "🌐 New visitor!",
-        embeds: [
-          {
-            title: "Visitor Details",
-            color: 5814783,
-            fields: [
-              { name: "IP Address", value: ip },                  // full raw IP
-              { name: "Country", value: data.country_name || "Unknown", inline: true },
-              { name: "Region", value: data.region || "Unknown", inline: true },
-              { name: "City", value: data.city || "Unknown", inline: true },
-              { name: "ISP / Org", value: data.org || "Unknown" },
-              { name: "Device Type", value: getDeviceType(), inline: true },
-              { name: "Operating System", value: getOS(), inline: true },
-              { name: "Browser", value: getBrowser(), inline: true }
-            ]
-          }
-        ]
-      };
-
-      fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
       });
-    })
-    .catch(err => console.error("Error:", err));
+  })
+  .catch(err => console.error("IPv4 Error:", err));
 </script>
