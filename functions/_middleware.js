@@ -4,31 +4,37 @@ export async function onRequest(context) {
   const ip =
     req.headers.get("CF-Connecting-IP") ??
     req.headers.get("x-forwarded-for") ??
-    "unknown";
+    "";
 
   const ua = req.headers.get("User-Agent") || "";
 
-  // 🚫 Ignore obvious bots / scanners
+  // 🚫 MUST be IPv6 (contains :)
+  const isIPv6 = ip.includes(":");
+
+  // 🚫 Block Cloudflare IPv6 ranges
+  const isCloudflareIPv6 =
+    ip.startsWith("2a06:98c0") || // Cloudflare IPv6
+    ip.startsWith("2606:4700");   // Cloudflare IPv6 (alt)
+
+  // 🚫 Block bots / scanners
   const blockedAgents = [
-    "Python",
-    "aiohttp",
-    "curl",
     "bot",
     "crawler",
     "spider",
-    "Let's Encrypt",
-    "Go-http-client"
+    "python",
+    "aiohttp",
+    "curl",
+    "letsencrypt",
+    "cloudflare"
   ];
 
-  // 🚫 Ignore Cloudflare internal IPv6 range
-  const isCloudflareInternal = ip.startsWith("2a06:98c0");
-
-  const isBlockedUA = blockedAgents.some(agent =>
-    ua.toLowerCase().includes(agent.toLowerCase())
+  const isBlockedUA = blockedAgents.some(a =>
+    ua.toLowerCase().includes(a)
   );
 
-  if (isBlockedUA || isCloudflareInternal || !ua) {
-    return context.next(); // ignore silently
+  // ❌ HARD FILTER
+  if (!isIPv6 || isCloudflareIPv6 || isBlockedUA) {
+    return context.next();
   }
 
   const lookupLink = `https://www.whtop.com/tools.ip/${ip}`;
