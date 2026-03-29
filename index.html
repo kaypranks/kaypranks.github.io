@@ -41,7 +41,6 @@ body{background:#0a0a0a;color:#d8d8d8;font-family:'Inter',sans-serif;-webkit-fon
 .best-time-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2e2e2e;margin-bottom:4px;}
 .best-time-val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#444;}
 
-/* SECTION */
 .sec{margin-bottom:48px;}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
 .sec-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#383838;}
@@ -151,141 +150,193 @@ body{background:#0a0a0a;color:#d8d8d8;font-family:'Inter',sans-serif;-webkit-fon
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp }            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const FIREBASE_URL = "https://website-9f859-default-rtdb.europe-west1.firebasedatabase.app";
-const PLAYER_ID    = "8499836409";
-// ─────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyC2umvpkas9QCC1PHrWXjk6g67i7Wyr11A",
+  authDomain:        "website-9f859.firebaseapp.com",
+  databaseURL:       "https://website-9f859-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "website-9f859",
+  storageBucket:     "website-9f859.firebasestorage.app",
+  messagingSenderId: "756244892931",
+  appId:             "1:756244892931:web:20a4656797e7da82936d36",
+  measurementId:     "G-D816NNYLGZ"
+};
 
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+const PLAYER_ID            = "8499836409";
 const ROBLOX_ID_FOR_AVATAR = "8499836409";
 
-// Avatar
+// ── Avatar ───────────────────────────────────────────────────
 fetch(`https://thumbnails.roproxy.com/v1/users/avatar?userIds=${ROBLOX_ID_FOR_AVATAR}&size=420x420&format=Png&isCircular=false`)
-  .then(r=>r.json()).then(res=>{
-    if(res.data?.[0]?.state==="Completed")
-      document.getElementById('avatar').src=res.data[0].imageUrl;
-  }).catch(()=>{});
+  .then(r => r.json())
+  .then(res => {
+    if (res.data?.[0]?.state === "Completed")
+      document.getElementById('avatar').src = res.data[0].imageUrl;
+  })
+  .catch(() => {});
 
-// Helpers
-function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-
-function parseOddsNum(str){
-  if(!str)return 0;
-  const m=str.replace(/,/g,'').match(/\d+$/);
-  return m?parseInt(m[0]):0;
+// ── Helpers ──────────────────────────────────────────────────
+function set(id, v) {
+  const e = document.getElementById(id);
+  if (e) e.textContent = v;
 }
 
-function fmt(n){return Number(n).toLocaleString();}
-
-// Render auras
-function renderAuras(auras){
-  const grid=document.getElementById('aura-grid');
-  if(!auras||!auras.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1">No auras yet</div>';return;}
-  auras.sort((a,b)=>parseOddsNum(b.odds)-parseOddsNum(a.odds));
-  set('aura-count',auras.length+' auras');
-  grid.innerHTML='';
-  auras.forEach(a=>{
-    const c=document.createElement('div');
-    const isRare=parseOddsNum(a.odds)>=500000;
-    c.className='aura-card'+(isRare?' rare':'');
-    c.innerHTML=`
-      ${(a.count||1)>1?`<span class="aura-dup">×${a.count}</span>`:''}
-      <div class="aura-name">${a.name}</div>
-      <span class="aura-odds">${(a.odds||'').toLowerCase()}</span>
-    `;
-    grid.appendChild(c);
-  });
-  const total=auras.reduce((s,a)=>s+(a.count||1),0);
-  set('stat-collected',fmt(total));
+function fmt(n) {
+  return Number(n).toLocaleString();
 }
 
-// Render today's rolls
-function renderRolls(history){
-  const list=document.getElementById('roll-list');
-  const todayStart=new Date();todayStart.setHours(0,0,0,0);
-  const todayTs=todayStart.getTime()/1000;
+// FIX 1: handles both "1 in 1,000,000" strings AND plain numbers
+function parseOddsNum(val) {
+  if (val === null || val === undefined) return 0;
+  if (typeof val === 'number') return val;
+  const cleaned = String(val).replace(/,/g, '');
+  const m = cleaned.match(/(\d+)\s*$/);
+  return m ? parseInt(m[1], 10) : 0;
+}
 
-  const todayNotable=(history||[]).filter(r=>
-    (r.timestamp||0)>=todayTs && parseOddsNum(r.odds)>=10000
-  );
+// ── Loader ───────────────────────────────────────────────────
+// FIX 2: loader always dismisses — on success, error, or after 6s max
+let loaderDismissed = false;
+function dismissLoader() {
+  if (loaderDismissed) return;
+  loaderDismissed = true;
+  const ldr = document.getElementById('loader');
+  ldr.classList.add('gone');
+  setTimeout(() => ldr.remove(), 600);
+}
+setTimeout(dismissLoader, 6000);
 
-  if(!todayNotable.length){
-    list.innerHTML='<div class="empty">No notable rolls today yet</div>';
-    document.getElementById('best-card').style.display='none';
-    set('roll-count','0 rolls');
+// ── Render auras ──────────────────────────────────────────────
+function renderAuras(auras) {
+  const grid = document.getElementById('aura-grid');
+
+  // FIX 3: always update stat-collected, even when auras is empty
+  const total = (auras || []).reduce((s, a) => s + (a.count || 1), 0);
+  set('stat-collected', fmt(total));
+
+  if (!auras || !auras.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No auras yet</div>';
+    set('aura-count', '0 auras');
     return;
   }
 
-  // Best = rarest
-  const sorted=[...todayNotable].sort((a,b)=>parseOddsNum(b.odds)-parseOddsNum(a.odds));
-  const best=sorted[0];
-  document.getElementById('best-card').style.display='flex';
-  set('best-name',best.name);
-  set('best-odds',best.odds||'');
-  set('best-time',best.timestamp
-    ?new Date(best.timestamp*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-    :'—');
+  auras.sort((a, b) => parseOddsNum(b.odds) - parseOddsNum(a.odds));
+  set('aura-count', auras.length + ' auras');
+  grid.innerHTML = '';
 
-  // List sorted by time desc
-  const byTime=[...todayNotable].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
-  set('roll-count',byTime.length+' rolls');
-  list.innerHTML='';
-  byTime.forEach(r=>{
-    const row=document.createElement('div');
-    const hl=parseOddsNum(r.odds)>=100000;
-    row.className='roll-row'+(hl?' hl':'');
-    const t=r.timestamp
-      ?new Date(r.timestamp*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-      :'—';
-    row.innerHTML=`
-      <div class="rn">${r.name||'Unknown'}</div>
-      <div class="ro">${r.odds||''}</div>
+  auras.forEach(a => {
+    const c = document.createElement('div');
+    const isRare = parseOddsNum(a.odds) >= 500000;
+    c.className = 'aura-card' + (isRare ? ' rare' : '');
+    c.innerHTML = `
+      ${(a.count || 1) > 1 ? `<span class="aura-dup">×${a.count}</span>` : ''}
+      <div class="aura-name">${a.name || 'Unknown'}</div>
+      <span class="aura-odds">${String(a.odds || '').toLowerCase()}</span>
+    `;
+    grid.appendChild(c);
+  });
+}
+
+// ── Render today's rolls ──────────────────────────────────────
+function renderRolls(history) {
+  const list = document.getElementById('roll-list');
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayTs = todayStart.getTime() / 1000;
+
+  const todayNotable = (history || []).filter(r =>
+    (r.timestamp || 0) >= todayTs && parseOddsNum(r.odds) >= 10000
+  );
+
+  if (!todayNotable.length) {
+    list.innerHTML = '<div class="empty">No notable rolls today yet</div>';
+    document.getElementById('best-card').style.display = 'none';
+    set('roll-count', '0 rolls');
+    return;
+  }
+
+  const sorted = [...todayNotable].sort((a, b) => parseOddsNum(b.odds) - parseOddsNum(a.odds));
+  const best = sorted[0];
+  document.getElementById('best-card').style.display = 'flex';
+  set('best-name', best.name || 'Unknown');
+  set('best-odds', best.odds || '');
+  set('best-time', best.timestamp
+    ? new Date(best.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : '—');
+
+  const byTime = [...todayNotable].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  set('roll-count', byTime.length + ' rolls');
+  list.innerHTML = '';
+
+  byTime.forEach(r => {
+    const row = document.createElement('div');
+    const hl = parseOddsNum(r.odds) >= 100000;
+    row.className = 'roll-row' + (hl ? ' hl' : '');
+    const t = r.timestamp
+      ? new Date(r.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : '—';
+    row.innerHTML = `
+      <div class="rn">${r.name || 'Unknown'}</div>
+      <div class="ro">${r.odds || ''}</div>
       <div class="rt">${t}</div>
     `;
     list.appendChild(row);
   });
 }
 
-let loaded=false;
+// ── Firebase Realtime listener (instant updates, no polling) ──
+const playerRef = ref(db, `players/${PLAYER_ID}`);
 
-// Poll Firebase every 3 seconds
-function poll(){
-  const url=`${FIREBASE_URL}/players/${PLAYER_ID}.json`;
-  fetch(url)
-    .then(r=>r.json())
-    .then(d=>{
-      if(!d){return;}
+onValue(playerRef, (snapshot) => {
+  dismissLoader();
 
-      // Online check — last_updated within 30s
-      const online=(Date.now()/1000)-(d.last_updated||0)<30;
-      const dot=document.getElementById('live-dot');
-      if(online){dot.classList.add('on');set('live-txt','Live');}
-      else{dot.classList.remove('on');set('live-txt','Offline');}
+  const d = snapshot.val();
 
-      set('stat-rolls',fmt(d.rolls||0));
-      set('val-equipped',d.equipped_aura||'None');
-      set('val-biome',d.biome||'Normal');
+  if (!d) {
+    document.getElementById('live-dot').classList.remove('on');
+    set('live-txt', 'No data yet');
+    set('stat-rolls', '0');
+    set('stat-collected', '0');
+    set('val-equipped', 'None');
+    set('val-biome', 'Normal');
+    renderAuras([]);
+    renderRolls([]);
+    return;
+  }
 
-      renderAuras(d.auras||[]);
-      renderRolls(d.roll_history||[]);
+  const online = (Date.now() / 1000) - (d.last_updated || 0) < 30;
+  const dot = document.getElementById('live-dot');
+  if (online) { dot.classList.add('on'); set('live-txt', 'Live'); }
+  else        { dot.classList.remove('on'); set('live-txt', 'Offline'); }
 
-      set('footer-time','updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  set('stat-rolls', fmt(d.rolls || 0));
+  set('val-equipped', d.equipped_aura || 'None');
+  set('val-biome', d.biome || 'Normal');
 
-      if(!loaded){
-        loaded=true;
-        const ldr=document.getElementById('loader');
-        ldr.classList.add('gone');
-        setTimeout(()=>ldr.remove(),600);
-      }
-    })
-    .catch(()=>{
-      document.getElementById('live-dot').classList.remove('on');
-      set('live-txt','Offline');
-    });
-}
+  // Lua may send these as JSON strings — parse if needed
+  let history = d.roll_history || [];
+  if (typeof history === 'string') { try { history = JSON.parse(history); } catch { history = []; } }
 
-poll();
-setInterval(poll,3000);
+  let auras = d.auras || [];
+  if (typeof auras === 'string') { try { auras = JSON.parse(auras); } catch { auras = []; } }
+
+  renderAuras(auras);
+  renderRolls(history);
+
+  set('footer-time', 'updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+}, (error) => {
+  // Called if Firebase connection fails (e.g. rules block access)
+  dismissLoader();
+  document.getElementById('live-dot').classList.remove('on');
+  set('live-txt', 'Offline');
+  console.error('Firebase error:', error);
+});
 </script>
 </body>
 </html>
