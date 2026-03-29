@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>inhumanintelligence — Aura Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  background:#0a0a0a;
+  color:#d8d8d8;
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+
+/* Loading screen */
+#loader{
+  position:fixed;inset:0;
+  background:#0a0a0a;
+  z-index:999;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:16px;
+  transition:opacity .5s;
+}
+#loader.gone{opacity:0;pointer-events:none;}
+.spinner{
+  width:32px;height:32px;
+  border:2px solid #1e1e1e;
+  border-top-color:#444;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loader-txt{font-size:.72rem;font-weight:600;color:#333;text-transform:uppercase;letter-spacing:.1em;}
+
+.page{
+  max-width:860px;
+  margin:0 auto;
+  padding:56px 28px 96px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  gap:22px;
+  margin-bottom:48px;
+  padding-bottom:36px;
+  border-bottom:1px solid #181818;
+}
+.avatar{
+  width:68px;height:68px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#141414;
+  flex-shrink:0;
+  border:2px solid #1e1e1e;
+}
+.name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:2rem;
+  font-weight:800;
+  letter-spacing:-.01em;
+  color:#fff;
+  line-height:1;
+  text-transform:uppercase;
+}
+.header-meta{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.equipped-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#131313;border:1px solid #1e1e1e;
+  border-radius:6px;padding:5px 12px;
+  font-size:.72rem;font-weight:600;color:#555;
+}
+.equipped-pill b{color:#bbb;font-weight:700;}
+.biome-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#131313;border:1px solid #1e1e1e;
+  border-radius:6px;padding:5px 12px;
+  font-size:.72rem;font-weight:600;color:#555;
+}
+.biome-pill b{color:#bbb;font-weight:700;}
+.live-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.65rem;font-weight:700;color:#3a3a3a;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.live-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#2a2a2a;
+}
+.live-dot.on{
+  background:#4ade80;
+  box-shadow:0 0 8px rgba(74,222,128,.4);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-bottom:48px;
+}
+.stat-card{
+  background:#111;border:1px solid #1a1a1a;
+  border-radius:14px;padding:22px 24px;
+}
+.stat-label{
+  font-size:.65rem;font-weight:700;
+  color:#383838;text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:8px;
+}
+.stat-value{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:3rem;font-weight:800;
+  color:#fff;line-height:1;letter-spacing:-.01em;
+}
+
+/* BEST TODAY */
+.best-card{
+  background:#111;border:1px solid #1a1a1a;
+  border-radius:14px;padding:26px 28px;
+  margin-bottom:48px;
+  display:flex;align-items:center;
+  justify-content:space-between;gap:16px;
+}
+.best-left{}
+.best-eyebrow{
+  font-size:.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:#383838;margin-bottom:10px;
+}
+.best-name{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:2rem;font-weight:800;
+  color:#fff;line-height:1;
+  text-transform:uppercase;margin-bottom:5px;
+}
+.best-odds{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;font-weight:700;color:#444;
+}
+.best-right{text-align:right;flex-shrink:0;}
+.best-time-label{font-size:.6rem;font-weight:700;color:#2e2e2e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.best-time-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;font-weight:700;color:#444;
+}
+
+/* SECTION */
+.sec{margin-bottom:48px;}
+.sec-head{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+.sec-title{
+  font-size:.65rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;color:#383838;
+}
+.sec-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;font-weight:700;color:#2e2e2e;
+}
+
+/* ROLL LIST */
+.roll-list{display:flex;flex-direction:column;gap:2px;}
+.roll-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:9px;
+  transition:background .15s;
+}
+.roll-row:hover{background:#111;}
+.roll-row.hl{background:#121212;}
+.roll-row.hl:hover{background:#151515;}
+.rn{font-size:.84rem;font-weight:600;color:#484848;flex:1;}
+.roll-row.hl .rn{color:#c8c8c8;font-weight:700;}
+.ro{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;color:#252525;}
+.roll-row.hl .ro{color:#383838;}
+.rt{font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:500;color:#222;min-width:38px;text-align:right;}
+.roll-row.hl .rt{color:#363636;}
+
+/* AURA GRID */
+.aura-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+  gap:9px;
+}
+.aura-card{
+  background:#111;border:1px solid #1a1a1a;
+  border-radius:12px;padding:18px 14px 14px;
+  position:relative;
+  transition:border-color .15s,transform .2s;cursor:default;
+}
+.aura-card:hover{border-color:#252525;transform:translateY(-2px);}
+.aura-card.rare{border-color:#202020;background:#121212;}
+.aura-name{
+  font-size:.84rem;font-weight:700;
+  color:#aaa;line-height:1.3;
+  word-break:break-word;margin-bottom:5px;
+}
+.aura-card.rare .aura-name{color:#ddd;}
+.aura-odds{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.63rem;font-weight:700;color:#2e2e2e;display:block;
+}
+.aura-card.rare .aura-odds{color:#3e3e3e;}
+.aura-dup{
+  position:absolute;top:9px;right:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;font-weight:700;color:#2e2e2e;
+  background:#0d0d0d;border:1px solid #1a1a1a;
+  border-radius:4px;padding:1px 5px;
+}
+
+/* empty / error */
+.empty{
+  padding:32px 0;text-align:center;
+  font-size:.8rem;font-weight:600;color:#2a2a2a;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* FOOTER */
+.footer{
+  padding-top:28px;border-top:1px solid #181818;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.footer-txt{font-size:.65rem;font-weight:700;color:#222;text-transform:uppercase;letter-spacing:.08em;}
+
+@media(max-width:560px){
+  .page{padding:32px 16px 60px;}
+  .stats{grid-template-columns:1fr;}
+  .best-card{flex-direction:column;gap:10px;}
+  .best-right{text-align:left;}
+  .name{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <div class="loader-txt">Connecting to tracker...</div>
+</div>
+
+<div class="page">
+
+  <div class="header">
+    <img class="avatar" id="avatar" src="" alt="">
+    <div>
+      <div class="name">inhumanintelligence</div>
+      <div class="header-meta">
+        <div class="equipped-pill">Aura — <b id="val-equipped">—</b></div>
+        <div class="biome-pill">Biome — <b id="val-biome">—</b></div>
+        <div class="live-tag">
+          <div class="live-dot" id="live-dot"></div>
+          <span id="live-txt">Connecting</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total Rolls</div>
+      <div class="stat-value" id="stat-rolls">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Auras Collected</div>
+      <div class="stat-value" id="stat-collected">—</div>
+    </div>
+  </div>
+
+  <div class="best-card" id="best-card" style="display:none;">
+    <div class="best-left">
+      <div class="best-eyebrow">Best Roll Today</div>
+      <div class="best-name" id="best-name">—</div>
+      <div class="best-odds" id="best-odds">—</div>
+    </div>
+    <div class="best-right">
+      <div class="best-time-label">Rolled at</div>
+      <div class="best-time-val" id="best-time">—</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Today's Notable Rolls</div>
+      <div class="sec-badge" id="roll-count"></div>
+    </div>
+    <div class="roll-list" id="roll-list"><div class="empty">Loading...</div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Aura Collection</div>
+      <div class="sec-badge" id="aura-count"></div>
+    </div>
+    <div class="aura-grid" id="aura-grid"><div class="empty" style="grid-column:1/-1;">Loading...</div></div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-txt">inhumanintelligence</div>
+    <div class="footer-txt" id="footer-time">—</div>
+  </div>
+
+</div>
+
+<script>
+const PLAYER_ID = "8499836409";
+
+// Avatar
+fetch(`https://thumbnails.roproxy.com/v1/users/avatar?userIds=${PLAYER_ID}&size=420x420&format=Png&isCircular=false`)
+  .then(r=>r.json()).then(res=>{
+    if(res.data?.[0]?.state==="Completed")
+      document.getElementById('avatar').src=res.data[0].imageUrl;
+  }).catch(()=>{});
+
+// Helpers
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function setHTML(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
+
+// Parse odds string like "1 in 600,000" → number
+function parseOdds(str){
+  if(!str) return 0;
+  const m=str.replace(/,/g,'').match(/[\d]+$/);
+  return m?parseInt(m[0]):0;
+}
+
+// Parse auras from the raw auras_html the server returns
+// Server gives us <div class='aura-card ...'><div class='aura-count'>x2</div><div class='aura-name'>Twilight</div><div class='aura-rarity ...'>1 IN 600,000</div></div>
+function parseAurasFromHTML(html){
+  const tmp=document.createElement('div');
+  tmp.innerHTML=html;
+  const cards=tmp.querySelectorAll('.aura-card');
+  const auras=[];
+  cards.forEach(card=>{
+    const nameEl=card.querySelector('.aura-name');
+    const rarEl=card.querySelector('.aura-rarity');
+    const cntEl=card.querySelector('.aura-count');
+    if(!nameEl) return;
+    const name=nameEl.textContent.trim();
+    const oddsRaw=rarEl?rarEl.textContent.trim():'';
+    const odds=oddsRaw.replace('IN','in').replace(/^1 IN/i,'1 in');
+    const count=cntEl?parseInt(cntEl.textContent.replace(/[^\d]/g,''))||1:1;
+    const oddsNum=parseOdds(odds);
+    auras.push({name,odds,count,oddsNum});
+  });
+  return auras;
+}
+
+// Parse recent roll history from history_html
+// Server gives hist-row divs with hist-nm, hist-ch, local-time data-timestamp
+function parseHistoryFromHTML(html){
+  const tmp=document.createElement('div');
+  tmp.innerHTML=html;
+  const rows=tmp.querySelectorAll('.hist-row');
+  const rolls=[];
+  // only keep today
+  const todayStart=new Date();todayStart.setHours(0,0,0,0);
+  const todayTs=todayStart.getTime()/1000;
+  rows.forEach(row=>{
+    const nmEl=row.querySelector('.hist-nm');
+    const chEl=row.querySelector('.hist-ch');
+    const tmEl=row.querySelector('[data-timestamp]');
+    if(!nmEl) return;
+    const name=nmEl.textContent.trim();
+    const odds=chEl?chEl.textContent.trim():'';
+    const ts=tmEl?parseInt(tmEl.dataset.timestamp):0;
+    if(ts<todayTs) return; // skip rolls from before today
+    const oddsNum=parseOdds(odds);
+    if(oddsNum>=10000) // only show 10k+ odds
+      rolls.push({name,odds,ts,oddsNum});
+  });
+  return rolls;
+}
+
+// Render aura grid
+function renderAuras(auras){
+  const grid=document.getElementById('aura-grid');
+  if(!auras.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1;">No auras yet</div>';return;}
+  set('aura-count',auras.length+' auras');
+  grid.innerHTML='';
+  // sort rarest first
+  auras.sort((a,b)=>b.oddsNum-a.oddsNum);
+  auras.forEach(a=>{
+    const c=document.createElement('div');
+    const isRare=a.oddsNum>=500000;
+    c.className='aura-card'+(isRare?' rare':'');
+    const oddsDisplay=a.odds||'';
+    c.innerHTML=`
+      ${a.count>1?`<span class="aura-dup">×${a.count}</span>`:''}
+      <div class="aura-name">${a.name}</div>
+      <span class="aura-odds">${oddsDisplay.toLowerCase()}</span>
+    `;
+    grid.appendChild(c);
+  });
+}
+
+// Render today's rolls
+function renderRolls(rolls){
+  const list=document.getElementById('roll-list');
+  const bestCard=document.getElementById('best-card');
+  if(!rolls.length){
+    list.innerHTML='<div class="empty">No notable rolls today yet</div>';
+    bestCard.style.display='none';
+    return;
+  }
+  // sort best first
+  rolls.sort((a,b)=>b.oddsNum-a.oddsNum);
+  set('roll-count',rolls.length+' rolls');
+
+  // Best today
+  const best=rolls[0];
+  bestCard.style.display='flex';
+  set('best-name',best.name);
+  set('best-odds',best.odds);
+  set('best-time',new Date(best.ts*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+
+  // List (sorted by time desc for readability)
+  const byTime=[...rolls].sort((a,b)=>b.ts-a.ts);
+  list.innerHTML='';
+  byTime.forEach(r=>{
+    const row=document.createElement('div');
+    const hl=r.oddsNum>=100000;
+    row.className='roll-row'+(hl?' hl':'');
+    const t=new Date(r.ts*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    row.innerHTML=`
+      <div class="rn">${r.name}</div>
+      <div class="ro">${r.odds}</div>
+      <div class="rt">${t}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+let loaded=false;
+
+function applyData(d){
+  if(!d||d.status!=='success') return;
+
+  // Stats
+  if(d.rolls) set('stat-rolls',d.rolls);
+  if(d.equipped_aura) set('val-equipped',d.equipped_aura);
+  if(d.biome) set('val-biome',d.biome);
+
+  // Aura count from collection stats if available
+  const auras=d.auras_html?parseAurasFromHTML(d.auras_html):[];
+  if(auras.length){
+    const total=auras.reduce((s,a)=>s+a.count,0);
+    set('stat-collected',total);
+    renderAuras(auras);
+  }
+
+  // Today's rolls from history
+  if(d.history_html){
+    const rolls=parseHistoryFromHTML(d.history_html);
+    renderRolls(rolls);
+  }
+
+  // Footer
+  set('footer-time','updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+
+  // Live dot on
+  const dot=document.getElementById('live-dot');
+  dot.classList.add('on');
+  set('live-txt','Live');
+
+  // Hide loader first time
+  if(!loaded){
+    loaded=true;
+    const loader=document.getElementById('loader');
+    loader.classList.add('gone');
+    setTimeout(()=>loader.remove(),600);
+  }
+}
+
+function poll(){
+  fetch(`player.php?id=${PLAYER_ID}&ajax=1`)
+    .then(r=>r.json())
+    .then(d=>applyData(d))
+    .catch(()=>{
+      document.getElementById('live-dot').classList.remove('on');
+      set('live-txt','Offline');
+    });
+}
+
+poll();
+setInterval(poll,3000);
+</script>
+</body>
+</html>
