@@ -17,7 +17,8 @@
             transition:transform 0.08s ease, opacity 0.2s;
             mix-blend-mode:screen;
         }
-        body:not(.touch-device) { cursor:none; }
+        body:not(.touch-device),
+        body:not(.touch-device) * { cursor:none !important; }
 
         body {
             font-family:'Inter',sans-serif;
@@ -152,7 +153,7 @@
             display:flex; align-items:center; justify-content:center;
             text-decoration:none;
             transition:background 0.2s, border-color 0.2s, transform 0.2s;
-            position:relative; overflow:hidden;
+            position:relative;
         }
         .s-btn:hover {
             background:rgba(255,255,255,0.1);
