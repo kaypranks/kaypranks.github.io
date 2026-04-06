@@ -9,13 +9,13 @@
     <style>
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-        /* ─── Cursor ─── */
         .cur {
-            position:fixed; width:30px; height:30px;
+            position:fixed; width:20px; height:20px;
             background:url('assets/custom_cursor.png') no-repeat center/contain;
             pointer-events:none; z-index:9999;
             transform:translate(-50%,-50%);
             transition:transform 0.08s ease, opacity 0.2s;
+            mix-blend-mode:screen;
         }
         body:not(.touch-device) { cursor:none; }
 
@@ -26,13 +26,11 @@
             -webkit-font-smoothing:antialiased;
         }
 
-        /* ─── Background ─── */
         #bg {
             position:fixed; inset:0;
             width:100%; height:100%;
             object-fit:cover; z-index:0;
         }
-        /* Gradient overlay: darker bottom so card reads clearly */
         .bg-overlay {
             position:fixed; inset:0; z-index:1;
             background:
@@ -40,7 +38,6 @@
                 linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%);
         }
 
-        /* ─── Start screen ─── */
         #start {
             position:fixed; inset:0; z-index:50;
             display:flex; flex-direction:column;
@@ -66,11 +63,10 @@
         }
         @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:.7} }
 
-        /* ─── Card ─── */
         #card {
             position:fixed; top:50%; left:50%;
             transform:translate(-50%,-50%) perspective(800px);
-            width:440px;
+            width:510px;
             background:rgba(10,10,14,0.55);
             border:1px solid rgba(255,255,255,0.07);
             border-radius:22px;
@@ -87,18 +83,15 @@
             will-change:transform;
         }
 
-        /* ─── Top row ─── */
         .top {
             display:flex; align-items:center; gap:16px;
             margin-bottom:18px;
         }
 
-        /* Avatar */
         .av-wrap {
             position:relative; flex-shrink:0;
             width:68px; height:68px;
         }
-        /* Spinning gradient ring */
         .av-ring {
             position:absolute; inset:-3px;
             border-radius:50%;
@@ -126,7 +119,6 @@
         }
         .av-inner img:hover { transform:scale(1.1); }
 
-        /* Name block */
         .info { flex:1; min-width:0; }
         #profile-name {
             font-size:22px; font-weight:600;
@@ -143,14 +135,12 @@
             min-height:18px; font-weight:300;
         }
 
-        /* Divider */
         .div {
             height:1px;
             background:linear-gradient(to right, transparent, rgba(255,255,255,0.07), transparent);
             margin:18px 0;
         }
 
-        /* ─── Socials row ─── */
         .socials {
             display:flex; align-items:center; gap:8px;
         }
@@ -164,25 +154,18 @@
             transition:background 0.2s, border-color 0.2s, transform 0.2s;
             position:relative; overflow:hidden;
         }
-        .s-btn::before {
-            content:''; position:absolute; inset:0;
-            background:rgba(255,255,255,0);
-            transition:background 0.2s;
-            border-radius:inherit;
-        }
         .s-btn:hover {
             background:rgba(255,255,255,0.1);
             border-color:rgba(255,255,255,0.18);
             transform:translateY(-3px);
         }
         .s-btn img {
-            width:24px; height:24px; object-fit:contain;
+            width:28px; height:28px; object-fit:contain;
             mix-blend-mode:screen;
             filter:brightness(1.15) contrast(1.05);
             position:relative; z-index:1;
         }
 
-        /* Mute button */
         .mute-btn {
             margin-left:auto;
             width:40px; height:40px; border-radius:11px;
@@ -200,7 +183,6 @@
         }
         .mute-btn svg { width:16px; height:16px; }
 
-        /* ─── Glitch ─── */
         .glitch { animation:glitch 0.15s ease-in-out; }
         @keyframes glitch {
             0%,100% { transform:translate(0); }
@@ -208,33 +190,29 @@
             70%  { transform:translate(2px, -1px); }
         }
 
-        /* ─── Mobile ─── */
-        @media (max-width:500px) {
+        @media (max-width:560px) {
             #card { width:90vw; padding:20px 18px 18px; border-radius:18px; }
             #s-name { font-size:36px; letter-spacing:5px; }
             #profile-name { font-size:19px; }
-            .av-wrap, .av-inner { width:56px; height:56px; }
             .av-wrap { width:60px; height:60px; }
+            .av-inner { inset:2px; }
         }
     </style>
 </head>
 <body>
     <div class="cur" id="cur"></div>
 
-    <!-- Start -->
     <div id="start">
         <div id="s-name">aras</div>
         <div id="s-user">@_asbru_</div>
         <div id="s-hint">click anywhere to enter</div>
     </div>
 
-    <!-- Background video (audio included) -->
     <video id="bg" autoplay loop muted playsinline webkit-playsinline>
         <source src="assets/background.mp4" type="video/mp4">
     </video>
     <div class="bg-overlay"></div>
 
-    <!-- Card -->
     <div id="card">
         <div class="top">
             <div class="av-wrap">
@@ -282,22 +260,20 @@
     <script>
     (() => {
         const $ = id => document.getElementById(id);
-        const start      = $('start');
-        const card       = $('card');
-        const bg         = $('bg');
-        const muteBtn    = $('mute-btn');
-        const icoOn      = $('ico-on');
-        const icoOff     = $('ico-off');
-        const pName      = $('profile-name');
-        const pBio       = $('profile-bio');
-        const avatar     = $('avatar');
-        const cur        = $('cur');
+        const start   = $('start');
+        const card    = $('card');
+        const bg      = $('bg');
+        const muteBtn = $('mute-btn');
+        const icoOn   = $('ico-on');
+        const icoOff  = $('ico-off');
+        const pName   = $('profile-name');
+        const pBio    = $('profile-bio');
+        const avatar  = $('avatar');
+        const cur     = $('cur');
 
-        // ── Autoplay muted (required by browsers) ──
         bg.muted = true;
         bg.play().catch(() => {});
 
-        // ── Cursor ──
         const isTouch = window.matchMedia('(pointer:coarse)').matches;
         if (isTouch) {
             document.body.classList.add('touch-device');
@@ -314,41 +290,28 @@
             document.addEventListener('mouseup',   () => cur.style.transform = 'scale(1) translate(-50%,-50%)');
         }
 
-        // ── Enter ──
         let entered = false;
         function enter() {
             if (entered) return;
             entered = true;
-
-            // Unmute video on user gesture
             bg.muted = false;
             bg.volume = 0.55;
             icoOn.style.display  = '';
             icoOff.style.display = 'none';
-
-            gsap.to(start, {
-                opacity:0, duration:0.7, ease:'power2.out',
-                onComplete:() => start.style.display = 'none'
-            });
-            gsap.fromTo(card,
-                { opacity:0, y:18, scale:0.96 },
-                { opacity:1, y:0,  scale:1, duration:0.65, ease:'power3.out', delay:0.15 }
-            );
-
+            gsap.to(start, { opacity:0, duration:0.7, ease:'power2.out', onComplete:() => start.style.display = 'none' });
+            gsap.fromTo(card, { opacity:0, y:18, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.65, ease:'power3.out', delay:0.15 });
             typeWriterName();
             typeWriterBio();
         }
         start.addEventListener('click', enter);
         start.addEventListener('touchstart', e => { e.preventDefault(); enter(); }, { passive:false });
 
-        // ── Mute toggle ──
         muteBtn.addEventListener('click', () => {
             bg.muted = !bg.muted;
             icoOn.style.display  = bg.muted ? 'none' : '';
             icoOff.style.display = bg.muted ? '' : 'none';
         });
 
-        // ── Name typewriter ──
         const NAME = 'aras';
         let nt='', ni=0, nDel=false, nC=true;
         function typeWriterName() {
@@ -362,7 +325,6 @@
         }
         setInterval(() => { nC=!nC; pName.textContent = nt+(nC?'|':''); }, 520);
 
-        // ── Bio typewriter ──
         const BIOS = ['hat bisschen gedauert aber hat sich auch gelohnt', '"Hello, World!"'];
         let bt='', bi=0, bmi=0, bDel=false, bC=true;
         function typeWriterBio() {
@@ -376,27 +338,18 @@
         }
         setInterval(() => { bC=!bC; pBio.textContent = bt+(bC?'|':''); }, 520);
 
-        // ── Card tilt ──
         card.addEventListener('mousemove', e => {
             const r = card.getBoundingClientRect();
             const x = (e.clientX - r.left - r.width/2)  / (r.width/2);
             const y = (e.clientY - r.top  - r.height/2) / (r.height/2);
-            gsap.to(card, {
-                rotationY: x * 7, rotationX: -y * 7,
-                duration:0.35, ease:'power2.out', transformPerspective:900
-            });
+            gsap.to(card, { rotationY:x*7, rotationX:-y*7, duration:0.35, ease:'power2.out', transformPerspective:900 });
         });
         card.addEventListener('mouseleave', () => {
             gsap.to(card, { rotationX:0, rotationY:0, duration:0.7, ease:'elastic.out(1,0.6)' });
         });
 
-        // ── Avatar spin ──
         avatar.addEventListener('click', () => {
-            gsap.fromTo(avatar,
-                { rotation:0 },
-                { rotation:360, duration:0.5, ease:'power2.inOut',
-                  onComplete:() => gsap.set(avatar, { rotation:0 }) }
-            );
+            gsap.fromTo(avatar, { rotation:0 }, { rotation:360, duration:0.5, ease:'power2.inOut', onComplete:() => gsap.set(avatar, { rotation:0 }) });
         });
     })();
     </script>
