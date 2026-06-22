@@ -1,358 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>aras</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+<meta charset="UTF-8">
+<title>Roblox Follower Viewer</title>
 
-        .cur {
-            position:fixed; width:20px; height:20px;
-            background:url('assets/custom_cursor.png') no-repeat center/contain;
-            pointer-events:none; z-index:9999;
-            transform:translate(-50%,-50%);
-            transition:transform 0.08s ease, opacity 0.2s;
-            mix-blend-mode:screen;
-        }
-        body:not(.touch-device),
-        body:not(.touch-device) * { cursor:none !important; }
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#1e1e1e;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
 
-        body {
-            font-family:'Inter',sans-serif;
-            background:#000; color:#fff;
-            overflow:hidden; height:100vh;
-            -webkit-font-smoothing:antialiased;
-        }
+.container{
+    background:#2b2b2b;
+    padding:30px;
+    border-radius:15px;
+    width:350px;
+    text-align:center;
+    box-shadow:0 0 20px rgba(0,0,0,.4);
+}
 
-        #bg {
-            position:fixed; inset:0;
-            width:100%; height:100%;
-            object-fit:cover; z-index:0;
-        }
-        .bg-overlay {
-            position:fixed; inset:0; z-index:1;
-            background:
-                radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.6) 0%, transparent 70%),
-                linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%);
-        }
+input{
+    width:80%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    margin-bottom:10px;
+}
 
-        #start {
-            position:fixed; inset:0; z-index:50;
-            display:flex; flex-direction:column;
-            align-items:center; justify-content:center; gap:6px;
-            backdrop-filter:blur(28px) brightness(0.6);
-            -webkit-backdrop-filter:blur(28px) brightness(0.6);
-            cursor:pointer;
-        }
-        #s-name {
-            font-size:52px; font-weight:700;
-            letter-spacing:8px; color:#fff;
-            text-shadow:0 0 60px rgba(255,255,255,0.3);
-        }
-        #s-user {
-            font-size:13px; color:rgba(255,255,255,0.35);
-            letter-spacing:4px; font-weight:300;
-        }
-        #s-hint {
-            margin-top:36px; font-size:11px;
-            color:rgba(255,255,255,0.2); letter-spacing:3px;
-            text-transform:uppercase;
-            animation:blink 2.2s ease-in-out infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:.7} }
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#00a2ff;
+    color:white;
+    font-size:16px;
+}
 
-        #card {
-            position:fixed; top:50%; left:50%;
-            transform:translate(-50%,-50%) perspective(800px);
-            width:510px;
-            background:rgba(10,10,14,0.55);
-            border:1px solid rgba(255,255,255,0.07);
-            border-radius:22px;
-            padding:26px 26px 22px;
-            z-index:10;
-            backdrop-filter:blur(30px) saturate(1.4);
-            -webkit-backdrop-filter:blur(30px) saturate(1.4);
-            opacity:0;
-            box-shadow:
-                0 0 0 1px rgba(255,255,255,0.03) inset,
-                0 24px 64px rgba(0,0,0,0.5),
-                0 4px 16px rgba(0,0,0,0.3);
-            transform-style:preserve-3d;
-            will-change:transform;
-        }
+#result{
+    margin-top:20px;
+}
 
-        .top {
-            display:flex; align-items:center; gap:16px;
-            margin-bottom:18px;
-        }
-
-        .av-wrap {
-            position:relative; flex-shrink:0;
-            width:68px; height:68px;
-        }
-        .av-ring {
-            position:absolute; inset:-3px;
-            border-radius:50%;
-            background:conic-gradient(
-                rgba(255,255,255,0) 0deg,
-                rgba(255,255,255,0.6) 90deg,
-                rgba(255,255,255,0) 180deg,
-                rgba(255,255,255,0.15) 270deg,
-                rgba(255,255,255,0) 360deg
-            );
-            animation:spin 3s linear infinite;
-            z-index:0;
-        }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .av-inner {
-            position:absolute; inset:2px;
-            border-radius:50%; overflow:hidden;
-            z-index:1;
-            border:1.5px solid rgba(0,0,0,0.4);
-        }
-        .av-inner img {
-            width:100%; height:100%; object-fit:cover;
-            cursor:pointer; display:block;
-            transition:transform 0.4s cubic-bezier(.34,1.56,.64,1);
-        }
-        .av-inner img:hover { transform:scale(1.1); }
-
-        .info { flex:1; min-width:0; }
-        #profile-name {
-            font-size:22px; font-weight:600;
-            letter-spacing:0.5px; color:#fff;
-            line-height:1.2;
-        }
-        #profile-username {
-            font-size:11.5px; color:rgba(255,255,255,0.3);
-            margin-top:3px; letter-spacing:0.5px; font-weight:400;
-        }
-        #profile-bio {
-            font-size:12.5px; color:rgba(255,255,255,0.45);
-            line-height:1.6; margin-top:8px;
-            min-height:18px; font-weight:300;
-        }
-
-        .div {
-            height:1px;
-            background:linear-gradient(to right, transparent, rgba(255,255,255,0.07), transparent);
-            margin:18px 0;
-        }
-
-        .socials {
-            display:flex; align-items:center; gap:8px;
-        }
-
-        .s-btn {
-            width:40px; height:40px; border-radius:11px;
-            background:rgba(255,255,255,0.04);
-            border:1px solid rgba(255,255,255,0.07);
-            display:flex; align-items:center; justify-content:center;
-            text-decoration:none;
-            transition:background 0.2s, border-color 0.2s, transform 0.2s;
-            position:relative;
-        }
-        .s-btn:hover {
-            background:rgba(255,255,255,0.1);
-            border-color:rgba(255,255,255,0.18);
-            transform:translateY(-3px);
-        }
-        .s-btn img {
-            width:28px; height:28px; object-fit:contain;
-            mix-blend-mode:screen;
-            filter:brightness(1.15) contrast(1.05);
-            position:relative; z-index:1;
-        }
-
-        .mute-btn {
-            margin-left:auto;
-            width:40px; height:40px; border-radius:11px;
-            background:rgba(255,255,255,0.04);
-            border:1px solid rgba(255,255,255,0.07);
-            display:flex; align-items:center; justify-content:center;
-            cursor:pointer; flex-shrink:0;
-            transition:background 0.2s, border-color 0.2s, transform 0.2s;
-            color:rgba(255,255,255,0.45);
-        }
-        .mute-btn:hover {
-            background:rgba(255,255,255,0.1);
-            border-color:rgba(255,255,255,0.18);
-            color:#fff; transform:translateY(-3px);
-        }
-        .mute-btn svg { width:16px; height:16px; }
-
-        .glitch { animation:glitch 0.15s ease-in-out; }
-        @keyframes glitch {
-            0%,100% { transform:translate(0); }
-            30%  { transform:translate(-2px, 1px); }
-            70%  { transform:translate(2px, -1px); }
-        }
-
-        @media (max-width:560px) {
-            #card { width:90vw; padding:20px 18px 18px; border-radius:18px; }
-            #s-name { font-size:36px; letter-spacing:5px; }
-            #profile-name { font-size:19px; }
-            .av-wrap { width:60px; height:60px; }
-            .av-inner { inset:2px; }
-        }
-    </style>
+img{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    margin-bottom:10px;
+}
+</style>
 </head>
 <body>
-    <div class="cur" id="cur"></div>
 
-    <div id="start">
-        <div id="s-name">aras</div>
-        <div id="s-user">@_asbru_</div>
-        <div id="s-hint">click anywhere to enter</div>
-    </div>
+<div class="container">
+    <h2>Roblox Followers</h2>
 
-    <video id="bg" autoplay loop muted playsinline webkit-playsinline>
-        <source src="assets/background.mp4" type="video/mp4">
-    </video>
-    <div class="bg-overlay"></div>
+    <input id="username" placeholder="Enter Roblox Username">
+    <br>
+    <button onclick="lookup()">Search</button>
 
-    <div id="card">
-        <div class="top">
-            <div class="av-wrap">
-                <div class="av-ring"></div>
-                <div class="av-inner">
-                    <img src="assets/profile.png" alt="aras" id="avatar">
-                </div>
-            </div>
-            <div class="info">
-                <div id="profile-name">aras</div>
-                <div id="profile-username">@_asbru_</div>
-                <div id="profile-bio"></div>
-            </div>
-        </div>
+    <div id="result"></div>
+</div>
 
-        <div class="div"></div>
+<script>
 
-        <div class="socials">
-            <a class="s-btn" href="https://discord.com/users/1120335112748413038" target="_blank" title="Discord">
-                <img src="assets/discord.png" alt="Discord">
-            </a>
-            <a class="s-btn" href="https://www.tiktok.com/@aras_rjv" target="_blank" title="TikTok">
-                <img src="assets/tiktok.png" alt="TikTok">
-            </a>
-            <a class="s-btn" href="https://www.instagram.com/aras_asbru" target="_blank" title="Instagram">
-                <img src="assets/instagram.png" alt="Instagram">
-            </a>
+const proxy = "https://corsproxy.io/?";
 
-            <button class="mute-btn" id="mute-btn" title="Toggle sound">
-                <svg id="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-                </svg>
-                <svg id="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                    <line x1="23" y1="9" x2="17" y2="15"/>
-                    <line x1="17" y1="9" x2="23" y2="15"/>
-                </svg>
-            </button>
-        </div>
-    </div>
+async function lookup(){
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script>
-    (() => {
-        const $ = id => document.getElementById(id);
-        const start   = $('start');
-        const card    = $('card');
-        const bg      = $('bg');
-        const muteBtn = $('mute-btn');
-        const icoOn   = $('ico-on');
-        const icoOff  = $('ico-off');
-        const pName   = $('profile-name');
-        const pBio    = $('profile-bio');
-        const avatar  = $('avatar');
-        const cur     = $('cur');
+    const username = document.getElementById("username").value.trim();
 
-        bg.muted = true;
-        bg.play().catch(() => {});
+    if(!username) return;
 
-        const isTouch = window.matchMedia('(pointer:coarse)').matches;
-        if (isTouch) {
-            document.body.classList.add('touch-device');
-            document.addEventListener('touchmove', e => {
-                cur.style.left = e.touches[0].clientX + 'px';
-                cur.style.top  = e.touches[0].clientY + 'px';
-            }, { passive:true });
-        } else {
-            document.addEventListener('mousemove', e => {
-                cur.style.left = e.clientX + 'px';
-                cur.style.top  = e.clientY + 'px';
-            });
-            document.addEventListener('mousedown', () => cur.style.transform = 'scale(0.7) translate(-50%,-50%)');
-            document.addEventListener('mouseup',   () => cur.style.transform = 'scale(1) translate(-50%,-50%)');
+    const result = document.getElementById("result");
+    result.innerHTML = "Loading...";
+
+    try{
+
+        // Username -> User ID
+        const userRes = await fetch(
+            proxy + encodeURIComponent("https://users.roblox.com/v1/usernames/users"),
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    usernames:[username],
+                    excludeBannedUsers:false
+                })
+            }
+        );
+
+        const userData = await userRes.json();
+
+        if(!userData.data.length){
+            result.innerHTML="User not found.";
+            return;
         }
 
-        let entered = false;
-        function enter() {
-            if (entered) return;
-            entered = true;
-            bg.muted = false;
-            bg.volume = 0.55;
-            icoOn.style.display  = '';
-            icoOff.style.display = 'none';
-            gsap.to(start, { opacity:0, duration:0.7, ease:'power2.out', onComplete:() => start.style.display = 'none' });
-            gsap.fromTo(card, { opacity:0, y:18, scale:0.96 }, { opacity:1, y:0, scale:1, duration:0.65, ease:'power3.out', delay:0.15 });
-            typeWriterName();
-            typeWriterBio();
-        }
-        start.addEventListener('click', enter);
-        start.addEventListener('touchstart', e => { e.preventDefault(); enter(); }, { passive:false });
+        const user = userData.data[0];
 
-        muteBtn.addEventListener('click', () => {
-            bg.muted = !bg.muted;
-            icoOn.style.display  = bg.muted ? 'none' : '';
-            icoOff.style.display = bg.muted ? '' : 'none';
-        });
+        // Followers
+        const followersRes = await fetch(
+            proxy + encodeURIComponent(`https://friends.roblox.com/v1/users/${user.id}/followers/count`)
+        );
 
-        const NAME = 'aras';
-        let nt='', ni=0, nDel=false, nC=true;
-        function typeWriterName() {
-            if (!nDel && ni < NAME.length) nt = NAME.slice(0, ++ni);
-            else if (nDel && ni > 0)       nt = NAME.slice(0, --ni);
-            else if (ni === NAME.length)   { nDel=true; setTimeout(typeWriterName,7000); return; }
-            else if (ni === 0)             nDel = false;
-            pName.textContent = nt + (nC ? '|' : '');
-            if (Math.random() < 0.07) { pName.classList.add('glitch'); setTimeout(()=>pName.classList.remove('glitch'),150); }
-            setTimeout(typeWriterName, nDel ? 110 : 190);
-        }
-        setInterval(() => { nC=!nC; pName.textContent = nt+(nC?'|':''); }, 520);
+        const followers = await followersRes.json();
 
-        const BIOS = ['hat bisschen gedauert aber hat sich auch gelohnt', '"Hello, World!"'];
-        let bt='', bi=0, bmi=0, bDel=false, bC=true;
-        function typeWriterBio() {
-            const c = BIOS[bmi];
-            if (!bDel && bi < c.length)    bt = c.slice(0, ++bi);
-            else if (bDel && bi > 0)       bt = c.slice(0, --bi);
-            else if (bi === c.length)      { bDel=true; setTimeout(typeWriterBio,2800); return; }
-            else if (bi===0 && bDel)       { bDel=false; bmi=(bmi+1)%BIOS.length; }
-            pBio.textContent = bt + (bC ? '|' : '');
-            setTimeout(typeWriterBio, bDel ? 45 : 90);
-        }
-        setInterval(() => { bC=!bC; pBio.textContent = bt+(bC?'|':''); }, 520);
+        // Thumbnail
+        const thumbRes = await fetch(
+            proxy + encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=420x420&format=Png&isCircular=false`)
+        );
 
-        card.addEventListener('mousemove', e => {
-            const r = card.getBoundingClientRect();
-            const x = (e.clientX - r.left - r.width/2)  / (r.width/2);
-            const y = (e.clientY - r.top  - r.height/2) / (r.height/2);
-            gsap.to(card, { rotationY:x*7, rotationX:-y*7, duration:0.35, ease:'power2.out', transformPerspective:900 });
-        });
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, { rotationX:0, rotationY:0, duration:0.7, ease:'elastic.out(1,0.6)' });
-        });
+        const thumb = await thumbRes.json();
 
-        avatar.addEventListener('click', () => {
-            gsap.fromTo(avatar, { rotation:0 }, { rotation:360, duration:0.5, ease:'power2.inOut', onComplete:() => gsap.set(avatar, { rotation:0 }) });
-        });
-    })();
-    </script>
+        result.innerHTML = `
+            <img src="${thumb.data[0].imageUrl}">
+            <h2>${user.name}</h2>
+            <h3>${followers.count.toLocaleString()} Followers</h3>
+        `;
+
+    }catch(err){
+        console.error(err);
+        result.innerHTML="Something went wrong.";
+    }
+
+}
+
+</script>
+
 </body>
 </html>
