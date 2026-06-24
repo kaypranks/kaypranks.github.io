@@ -2,137 +2,59 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Roblox Follower Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Roblox Followers</title>
 
 <style>
 body{
-    font-family:Arial,sans-serif;
-    background:#1e1e1e;
-    color:white;
+    margin:0;
+    height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
-    margin:0;
-}
-
-.container{
-    background:#2b2b2b;
-    padding:30px;
-    border-radius:15px;
-    width:350px;
-    text-align:center;
-    box-shadow:0 0 20px rgba(0,0,0,.4);
-}
-
-input{
-    width:80%;
-    padding:10px;
-    border:none;
-    border-radius:8px;
-    margin-bottom:10px;
-}
-
-button{
-    padding:10px 20px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#00a2ff;
+    background:#111;
     color:white;
-    font-size:16px;
+    font-family:Arial,sans-serif;
 }
-
-#result{
-    margin-top:20px;
+#count{
+    font-size:80px;
+    font-weight:bold;
 }
-
-img{
-    width:150px;
-    height:150px;
-    border-radius:50%;
-    margin-bottom:10px;
+#status{
+    margin-top:15px;
+    color:#888;
+    font-size:18px;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Roblox Followers</h2>
-
-    <input id="username" placeholder="Enter Roblox Username">
-    <br>
-    <button onclick="lookup()">Search</button>
-
-    <div id="result"></div>
+<div style="text-align:center;">
+    <div id="count">Loading...</div>
+    <div id="status">Connecting...</div>
 </div>
 
 <script>
+const API = "https://followers.discordgifkay.workers.dev/";
 
-const proxy = "https://corsproxy.io/?";
+async function update() {
+    try {
+        const res = await fetch(API + "?t=" + Date.now());
+        const data = await res.json();
 
-async function lookup(){
+        document.getElementById("count").textContent =
+            data.count.toLocaleString();
 
-    const username = document.getElementById("username").value.trim();
-
-    if(!username) return;
-
-    const result = document.getElementById("result");
-    result.innerHTML = "Loading...";
-
-    try{
-
-        // Username -> User ID
-        const userRes = await fetch(
-            proxy + encodeURIComponent("https://users.roblox.com/v1/usernames/users"),
-            {
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    usernames:[username],
-                    excludeBannedUsers:false
-                })
-            }
-        );
-
-        const userData = await userRes.json();
-
-        if(!userData.data.length){
-            result.innerHTML="User not found.";
-            return;
-        }
-
-        const user = userData.data[0];
-
-        // Followers
-        const followersRes = await fetch(
-            proxy + encodeURIComponent(`https://friends.roblox.com/v1/users/${user.id}/followers/count`)
-        );
-
-        const followers = await followersRes.json();
-
-        // Thumbnail
-        const thumbRes = await fetch(
-            proxy + encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=420x420&format=Png&isCircular=false`)
-        );
-
-        const thumb = await thumbRes.json();
-
-        result.innerHTML = `
-            <img src="${thumb.data[0].imageUrl}">
-            <h2>${user.name}</h2>
-            <h3>${followers.count.toLocaleString()} Followers</h3>
-        `;
-
-    }catch(err){
-        console.error(err);
-        result.innerHTML="Something went wrong.";
+        document.getElementById("status").textContent =
+            "Updated " + new Date().toLocaleTimeString();
+    } catch (e) {
+        document.getElementById("status").textContent =
+            "Failed to update";
     }
-
 }
 
+update();
+setInterval(update, 1000);
 </script>
 
 </body>
