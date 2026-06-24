@@ -2,60 +2,97 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Roblox Followers</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roblox Followers</title>
 <style>
-body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#111;
-    color:white;
-    font-family:Arial,sans-serif;
+*{box-sizing:border-box}html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;background:radial-gradient(circle at top,#181818,#0b0b0b 45%,#000);overflow:hidden;color:#fff}
+body{display:flex;align-items:center;justify-content:center}
+.card{
+width:380px;padding:28px;border-radius:34px;
+background:rgba(18,18,18,.68);
+backdrop-filter:blur(28px) saturate(180%);
+-webkit-backdrop-filter:blur(28px) saturate(180%);
+border:1px solid rgba(255,255,255,.08);
+box-shadow:0 25px 80px rgba(0,0,0,.8),inset 0 1px rgba(255,255,255,.06);
+position:relative;overflow:hidden;
+animation:float 6s ease-in-out infinite;
 }
-#count{
-    font-size:80px;
-    font-weight:bold;
+.card:before{
+content:"";position:absolute;inset:-50%;
+background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.05) 50%,transparent 65%);
+animation:shine 9s linear infinite;
 }
-#status{
-    margin-top:15px;
-    color:#888;
-    font-size:18px;
-}
+@keyframes shine{to{transform:translateX(70%) translateY(30%) rotate(25deg)}}
+@keyframes float{50%{transform:translateY(-8px)}}
+.avatar{width:120px;height:120px;border-radius:28px;display:block;margin:0 auto 14px;background:#333;object-fit:cover;border:1px solid rgba(255,255,255,.2)}
+.name{text-align:center;font-size:28px;font-weight:700}
+.label{text-align:center;color:#ddd;margin-top:18px}
+.big{text-align:center;font-size:58px;font-weight:800;margin-top:4px}
+.small{text-align:center;font-size:34px;font-weight:700}
+.change{text-align:center;margin-top:14px;font-size:22px}
+.time{text-align:center;color:#bbb;font-size:14px;margin-top:10px}
 </style>
 </head>
 <body>
+<div class="card">
+<img id="avatar" class="avatar">
+<div id="name" class="name">Loading...</div>
 
-<div style="text-align:center;">
-    <div id="count">Loading...</div>
-    <div id="status">Connecting...</div>
+<div class="label">Current Followers</div>
+<div id="current" class="big">...</div>
+
+<div class="label">10 Minutes Ago</div>
+<div id="old" class="small">...</div>
+
+<div id="change" class="change">...</div>
+<div id="time" class="time">Connecting...</div>
 </div>
 
 <script>
-const API = "https://followers.discordgifkay.workers.dev/";
+const USER=11141631629;
+const API="https://followers.discordgifkay.workers.dev/";
+const AVATAR=`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${USER}&size=420x420&format=Png&isCircular=false`;
+const USERINFO=`https://users.roblox.com/v1/users/${USER}`;
 
-async function update() {
-    try {
-        const res = await fetch(API + "?t=" + Date.now());
-        const data = await res.json();
+let history=JSON.parse(localStorage.getItem("followerHistory")||"[]");
 
-        document.getElementById("count").textContent =
-            data.count.toLocaleString();
-
-        document.getElementById("status").textContent =
-            "Updated " + new Date().toLocaleTimeString();
-    } catch (e) {
-        document.getElementById("status").textContent =
-            "Failed to update";
-    }
+async function setup(){
+ try{
+   let u=await fetch(USERINFO).then(r=>r.json());
+   document.getElementById("name").textContent=u.displayName||u.name;
+ }catch{}
+ try{
+   let a=await fetch(AVATAR).then(r=>r.json());
+   document.getElementById("avatar").src=a.data[0].imageUrl;
+ }catch{}
 }
+setup();
 
+async function update(){
+ try{
+   let data=await fetch(API+"?t="+Date.now()).then(r=>r.json());
+   let c=data.count;
+   document.getElementById("current").textContent=c.toLocaleString();
+
+   let now=Date.now();
+   history.push({t:now,c});
+   history=history.filter(x=>now-x.t<=600000);
+   localStorage.setItem("followerHistory",JSON.stringify(history));
+
+   let old=history[0]?.c??c;
+   document.getElementById("old").textContent=old.toLocaleString();
+
+   let diff=c-old;
+   document.getElementById("change").textContent=(diff>0?"+":"")+diff+" followers";
+   document.getElementById("change").style.color=diff>=0?"#fff":"#ccc";
+
+   document.getElementById("time").textContent="Updated "+new Date().toLocaleTimeString();
+ }catch(e){
+   document.getElementById("time").textContent="Update failed";
+ }
+}
 update();
-setInterval(update, 1000);
+setInterval(update,1000);
 </script>
-
 </body>
 </html>
