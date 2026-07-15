@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>OSINTCLAW</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Pixelfy+Sans:wght@400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:#000;
+    color:#fff;
+    font-family:Inter,sans-serif;
+
+}
+
+a{
+
+    color:white;
+    text-decoration:none;
+
+}
+
+header{
+
+    height:50px;
+
+    border-bottom:1px solid #2b2b2b;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 20px;
+
+    font-size:13px;
+
+}
+
+.left{
+
+    display:flex;
+    gap:16px;
+    align-items:center;
+
+}
+
+.right{
+
+    display:flex;
+    gap:24px;
+
+}
+
+.brand{
+
+    font-family:"Pixelfy Sans",sans-serif;
+    font-size:24px;
+
+}
+
+.status{
+
+    color:#8a8a8a;
+
+}
+
+main{
+
+    min-height:calc(100vh - 110px);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.hero{
+
+    width:100%;
+    max-width:1050px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+.logo{
+
+    width:260px;
+    margin-bottom:70px;
+
+}
+
+.search{
+
+    display:flex;
+
+    width:100%;
+
+    gap:8px;
+
+}
+
+select,input,button{
+
+    background:#000;
+
+    color:white;
+
+    border:1px solid #333;
+
+    height:48px;
+
+    outline:none;
+
+    transition:.15s;
+
+    font-size:14px;
+
+}
+
+select{
+
+    width:210px;
+
+    padding:0 15px;
+
+}
+
+input{
+
+    flex:1;
+
+    padding:0 18px;
+
+}
+
+button{
+
+    width:210px;
+
+    cursor:pointer;
+
+    font-family:"Pixelfy Sans",sans-serif;
+
+}
+
+select:hover,
+input:hover,
+button:hover{
+
+    border-color:white;
+
+}
+
+select:focus,
+input:focus{
+
+    border-color:white;
+
+}
+
+button:hover{
+
+    background:#111;
+
+}
+
+footer{
+
+    border-top:1px solid #2b2b2b;
+
+    padding:24px;
+
+    text-align:center;
+
+}
+
+.footer-text{
+
+    color:#666;
+
+    margin-bottom:12px;
+
+}
+
+.links{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:18px;
+
+    margin-bottom:12px;
+
+}
+
+.links a:hover{
+
+    color:#ccc;
+
+}
+
+.small{
+
+    color:#444;
+
+    font-size:13px;
+
+}
+
+@media(max-width:850px){
+
+.search{
+
+    flex-direction:column;
+
+}
+
+select,
+button,
+input{
+
+    width:100%;
+
+}
+
+.logo{
+
+    width:200px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="left">
+
+<div class="brand">OSINTCLAW</div>
+
+<div>|</div>
+
+<div class="status">checking status...</div>
+
+</div>
+
+<div class="right">
+
+<a href="#">Documentation</a>
+
+<a href="#">About</a>
+
+<a href="#">GitHub</a>
+
+</div>
+
+</header>
+
+<main>
+
+<div class="hero">
+
+<img src="logo.png" class="logo" alt="OSINTCLAW Logo">
+
+<div class="search">
+
+<select>
+
+<option>Select a query</option>
+
+<option>Username</option>
+
+<option>Email</option>
+
+<option>Domain</option>
+
+<option>Phone</option>
+
+<option>IP Address</option>
+
+<option>Hash</option>
+
+<option>URL</option>
+
+<option>Cryptocurrency</option>
+
+</select>
+
+<input
+type="text"
+placeholder="enter search query..."
+>
+
+<button>
+
+SEARCH
+
+</button>
+
+</div>
+
+</div>
+
+</main>
+
+<footer>
+
+<div class="footer-text">
+
+OSINTCLAW searches publicly available information from legal sources.
+
+</div>
+
+<div class="links">
+
+<a href="#">legal</a>
+
+•
+
+<a href="#">documentation</a>
+
+•
+
+<a href="#">contact</a>
+
+•
+
+<a href="#">privacy</a>
+
+•
+
+<a href="#">status</a>
+
+</div>
+
+<div class="small">
+
+Users are responsible for complying with applicable laws and platform terms of service.
+
+</div>
+
+</footer>
+
+</body>
+</html>
