@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>OSINTCLAW</title>
-<meta name="description" content="OSINTCLAW searches publicly available information from legal sources.">
+<title>osintclaw</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
 
 <style>
 
@@ -24,7 +20,7 @@ body {
     min-height: 100vh;
     background: #000;
     color: #fff;
-    font-family: Inter, sans-serif;
+    font-family: "Pixelify Sans", monospace;
     display: flex;
     flex-direction: column;
 }
@@ -41,43 +37,24 @@ main {
     width: 100%;
     max-width: 1100px;
     text-align: center;
-    animation: fade 0.6s ease;
-}
-
-@keyframes fade {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .logo {
     width: 300px;
     max-width: 80%;
-    margin-bottom: 50px;
-}
-
-.title {
-    font-family: "Pixelify Sans", sans-serif;
-    font-size: 42px;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
+    margin-bottom: 70px;
+    image-rendering: pixelated;
 }
 
 .subtitle {
-    color: #888;
-    font-size: 16px;
-    margin-bottom: 45px;
+    color: #777;
+    font-size: 18px;
+    margin-bottom: 40px;
 }
 
 .search-container {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     width: 100%;
 }
 
@@ -87,10 +64,11 @@ button {
 
     height: 55px;
     background: #000;
-    color: white;
+    color: #fff;
     border: 1px solid #333;
-    font-size: 15px;
-    transition: 150ms ease;
+    font-family: "Pixelify Sans", monospace;
+    font-size: 16px;
+
 }
 
 select {
@@ -103,51 +81,43 @@ input {
     padding: 0 20px;
 }
 
+input::placeholder {
+    color: #555;
+}
+
 button {
-    width: 180px;
+    width: 220px;
     cursor: pointer;
-    font-family: "Pixelify Sans", sans-serif;
     font-size: 18px;
 }
 
 select:hover,
 input:hover,
 button:hover {
-
     border-color: #777;
-
 }
 
 select:focus,
 input:focus,
 button:focus {
-
     outline: none;
-    border-color: white;
-
+    border-color: #fff;
 }
 
 button:hover {
-
     background: #111;
-
 }
 
 .disclaimer {
-
     text-align: center;
     padding: 30px 20px;
-    color: #666;
+    color: #555;
     font-size: 13px;
     border-top: 1px solid #1c1c1c;
-
 }
 
-@media(max-width:800px){
 
-    .title {
-        font-size: 32px;
-    }
+@media(max-width:800px){
 
     .search-container {
         flex-direction: column;
@@ -156,15 +126,7 @@ button:hover {
     select,
     input,
     button {
-
         width: 100%;
-
-    }
-
-    .logo {
-
-        width: 220px;
-
     }
 
 }
@@ -176,59 +138,50 @@ button:hover {
 
 <body>
 
-
 <main>
 
 <section class="hero">
 
-<img 
-src="images/osintclaw-logo.png"
-alt="OSINTCLAW Logo"
+<img
+src="./images/osintclaw-logo.png"
+alt="osintclaw logo"
 class="logo"
 >
 
 
-<h1 class="title">
-OSINTCLAW
-</h1>
-
-
 <p class="subtitle">
-Search Public Intelligence
+search public intelligence
 </p>
 
 
 <div class="search-container">
 
+<select>
 
-<select aria-label="Search type">
-
-<option>Username</option>
-<option>Email</option>
-<option>Domain</option>
-<option>IP Address</option>
-<option>Phone Number</option>
-<option>Hash</option>
-<option>Cryptocurrency Address</option>
-<option>URL</option>
+<option>username</option>
+<option>email</option>
+<option>domain</option>
+<option>ip address</option>
+<option>phone number</option>
+<option>hash</option>
+<option>cryptocurrency address</option>
+<option>url</option>
 
 </select>
 
 
 <input
 type="text"
-placeholder="enter search query..."
-aria-label="Search query"
+placeholder="input search query..."
 >
 
 
 <button>
-SEARCH
+search
 </button>
 
 
 </div>
-
 
 </section>
 
@@ -237,9 +190,9 @@ SEARCH
 
 <footer class="disclaimer">
 
-OSINTCLAW only searches publicly available information from legal sources.
+osintclaw only searches publicly available information from legal sources.
 <br>
-Users are responsible for complying with local laws and platform terms of service.
+users are responsible for complying with local laws and platform terms of service.
 
 </footer>
 
