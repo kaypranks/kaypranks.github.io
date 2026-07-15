@@ -7,7 +7,7 @@
 
 <title>osintclaw</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400&display=swap" rel="stylesheet">
 
 <style>
 
@@ -15,13 +15,14 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Pixelify Sans", monospace !important;
+    font-weight: 400;
 }
 
 body {
     min-height: 100vh;
     background: #000;
     color: #fff;
-    font-family: "Pixelify Sans", monospace;
     display: flex;
     flex-direction: column;
 }
@@ -63,20 +64,58 @@ main {
     width: 100%;
 }
 
-select,
-input,
-button {
+.custom-select {
+    position: relative;
+    width: 220px;
+}
+
+.select-button {
+    width: 100%;
     height: 55px;
     background: #000;
     color: #fff;
     border: 1px solid #333;
-    font-family: "Pixelify Sans", monospace;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.options {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: #000;
+    border: 1px solid #333;
+    display: none;
+    z-index: 10;
+}
+
+.options div {
+    padding: 15px;
+    cursor: pointer;
+    text-align: left;
     font-size: 16px;
 }
 
-select {
-    width: 220px;
-    padding: 0 15px;
+.options div:hover {
+    background: #111;
+}
+
+.custom-select.active .options {
+    display: block;
+}
+
+input,
+.search-button {
+    height: 55px;
+    background: #000;
+    color: #fff;
+    border: 1px solid #333;
+    font-size: 16px;
 }
 
 input {
@@ -88,26 +127,24 @@ input::placeholder {
     color: #555;
 }
 
-button {
+.search-button {
     width: 220px;
     cursor: pointer;
     font-size: 18px;
 }
 
-select:hover,
-input:hover,
-button:hover {
+button:hover,
+input:hover {
     border-color: #777;
 }
 
-select:focus,
-input:focus,
-button:focus {
+button:focus,
+input:focus {
     outline: none;
     border-color: #fff;
 }
 
-button:hover {
+.search-button:hover {
     background: #111;
 }
 
@@ -125,9 +162,9 @@ button:hover {
         flex-direction: column;
     }
 
-    select,
+    .custom-select,
     input,
-    button {
+    .search-button {
         width: 100%;
     }
 
@@ -140,9 +177,11 @@ button:hover {
 
 <body>
 
+
 <main>
 
 <section class="hero">
+
 
 <img
 src="https://kaypranks.github.io/osintclaw-logo.png"
@@ -158,18 +197,26 @@ search public intelligence
 
 <div class="search-container">
 
-<select>
 
-<option>username</option>
-<option>email</option>
-<option>domain</option>
-<option>ip address</option>
-<option>phone number</option>
-<option>hash</option>
-<option>cryptocurrency address</option>
-<option>url</option>
+<div class="custom-select">
 
-</select>
+<button class="select-button">
+username
+<span>▼</span>
+</button>
+
+
+<div class="options">
+
+<div>username</div>
+<div>email</div>
+<div>domain</div>
+<div>ip address</div>
+<div>phone number</div>
+
+</div>
+
+</div>
 
 
 <input
@@ -178,12 +225,13 @@ placeholder="input search query..."
 >
 
 
-<button>
+<button class="search-button">
 search
 </button>
 
 
 </div>
+
 
 </section>
 
@@ -197,6 +245,40 @@ osintclaw only searches publicly available information from legal sources.
 users are responsible for complying with local laws and platform terms of service.
 
 </footer>
+
+
+<script>
+
+const select = document.querySelector(".custom-select");
+const button = document.querySelector(".select-button");
+const options = document.querySelectorAll(".options div");
+
+
+button.onclick = (e) => {
+    e.stopPropagation();
+    select.classList.toggle("active");
+};
+
+
+options.forEach(option => {
+
+    option.onclick = () => {
+
+        button.innerHTML = option.textContent + "<span>▼</span>";
+        select.classList.remove("active");
+
+    };
+
+});
+
+
+document.onclick = () => {
+
+    select.classList.remove("active");
+
+};
+
+</script>
 
 
 </body>
