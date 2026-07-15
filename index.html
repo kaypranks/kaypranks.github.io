@@ -5,251 +5,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>OSINTCLAW</title>
+<meta name="description" content="OSINTCLAW searches publicly available information from legal sources.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Pixelfy+Sans:wght@400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-
-    background:#000;
-    color:#fff;
-    font-family:Inter,sans-serif;
-
+body {
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+    font-family: Inter, sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
-a{
-
-    color:white;
-    text-decoration:none;
-
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
 }
 
-header{
-
-    height:50px;
-
-    border-bottom:1px solid #2b2b2b;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:0 20px;
-
-    font-size:13px;
-
+.hero {
+    width: 100%;
+    max-width: 1100px;
+    text-align: center;
+    animation: fade 0.6s ease;
 }
 
-.left{
+@keyframes fade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
 
-    display:flex;
-    gap:16px;
-    align-items:center;
-
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.right{
-
-    display:flex;
-    gap:24px;
-
+.logo {
+    width: 300px;
+    max-width: 80%;
+    margin-bottom: 50px;
 }
 
-.brand{
-
-    font-family:"Pixelfy Sans",sans-serif;
-    font-size:24px;
-
+.title {
+    font-family: "Pixelify Sans", sans-serif;
+    font-size: 42px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
 }
 
-.status{
-
-    color:#8a8a8a;
-
+.subtitle {
+    color: #888;
+    font-size: 16px;
+    margin-bottom: 45px;
 }
 
-main{
-
-    min-height:calc(100vh - 110px);
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
+.search-container {
+    display: flex;
+    gap: 10px;
+    width: 100%;
 }
 
-.hero{
+select,
+input,
+button {
 
-    width:100%;
-    max-width:1050px;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
+    height: 55px;
+    background: #000;
+    color: white;
+    border: 1px solid #333;
+    font-size: 15px;
+    transition: 150ms ease;
 }
 
-.logo{
-
-    width:260px;
-    margin-bottom:70px;
-
+select {
+    width: 220px;
+    padding: 0 15px;
 }
 
-.search{
-
-    display:flex;
-
-    width:100%;
-
-    gap:8px;
-
+input {
+    flex: 1;
+    padding: 0 20px;
 }
 
-select,input,button{
-
-    background:#000;
-
-    color:white;
-
-    border:1px solid #333;
-
-    height:48px;
-
-    outline:none;
-
-    transition:.15s;
-
-    font-size:14px;
-
-}
-
-select{
-
-    width:210px;
-
-    padding:0 15px;
-
-}
-
-input{
-
-    flex:1;
-
-    padding:0 18px;
-
-}
-
-button{
-
-    width:210px;
-
-    cursor:pointer;
-
-    font-family:"Pixelfy Sans",sans-serif;
-
+button {
+    width: 180px;
+    cursor: pointer;
+    font-family: "Pixelify Sans", sans-serif;
+    font-size: 18px;
 }
 
 select:hover,
 input:hover,
-button:hover{
+button:hover {
 
-    border-color:white;
+    border-color: #777;
 
 }
 
 select:focus,
-input:focus{
+input:focus,
+button:focus {
 
-    border-color:white;
-
-}
-
-button:hover{
-
-    background:#111;
+    outline: none;
+    border-color: white;
 
 }
 
-footer{
+button:hover {
 
-    border-top:1px solid #2b2b2b;
-
-    padding:24px;
-
-    text-align:center;
+    background: #111;
 
 }
 
-.footer-text{
+.disclaimer {
 
-    color:#666;
-
-    margin-bottom:12px;
-
-}
-
-.links{
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:18px;
-
-    margin-bottom:12px;
+    text-align: center;
+    padding: 30px 20px;
+    color: #666;
+    font-size: 13px;
+    border-top: 1px solid #1c1c1c;
 
 }
 
-.links a:hover{
+@media(max-width:800px){
 
-    color:#ccc;
+    .title {
+        font-size: 32px;
+    }
 
-}
+    .search-container {
+        flex-direction: column;
+    }
 
-.small{
+    select,
+    input,
+    button {
 
-    color:#444;
+        width: 100%;
 
-    font-size:13px;
+    }
 
-}
+    .logo {
 
-@media(max-width:850px){
+        width: 220px;
 
-.search{
-
-    flex-direction:column;
-
-}
-
-select,
-button,
-input{
-
-    width:100%;
-
-}
-
-.logo{
-
-    width:200px;
-
-}
+    }
 
 }
 
@@ -257,116 +173,76 @@ input{
 
 </head>
 
+
 <body>
 
-<header>
-
-<div class="left">
-
-<div class="brand">OSINTCLAW</div>
-
-<div>|</div>
-
-<div class="status">checking status...</div>
-
-</div>
-
-<div class="right">
-
-<a href="#">Documentation</a>
-
-<a href="#">About</a>
-
-<a href="#">GitHub</a>
-
-</div>
-
-</header>
 
 <main>
 
-<div class="hero">
+<section class="hero">
 
-<img src="logo.png" class="logo" alt="OSINTCLAW Logo">
+<img 
+src="images/osintclaw-logo.png"
+alt="OSINTCLAW Logo"
+class="logo"
+>
 
-<div class="search">
 
-<select>
+<h1 class="title">
+OSINTCLAW
+</h1>
 
-<option>Select a query</option>
+
+<p class="subtitle">
+Search Public Intelligence
+</p>
+
+
+<div class="search-container">
+
+
+<select aria-label="Search type">
 
 <option>Username</option>
-
 <option>Email</option>
-
 <option>Domain</option>
-
-<option>Phone</option>
-
 <option>IP Address</option>
-
+<option>Phone Number</option>
 <option>Hash</option>
-
+<option>Cryptocurrency Address</option>
 <option>URL</option>
 
-<option>Cryptocurrency</option>
-
 </select>
+
 
 <input
 type="text"
 placeholder="enter search query..."
+aria-label="Search query"
 >
 
+
 <button>
-
 SEARCH
-
 </button>
 
-</div>
 
 </div>
+
+
+</section>
 
 </main>
 
-<footer>
 
-<div class="footer-text">
+<footer class="disclaimer">
 
-OSINTCLAW searches publicly available information from legal sources.
-
-</div>
-
-<div class="links">
-
-<a href="#">legal</a>
-
-•
-
-<a href="#">documentation</a>
-
-•
-
-<a href="#">contact</a>
-
-•
-
-<a href="#">privacy</a>
-
-•
-
-<a href="#">status</a>
-
-</div>
-
-<div class="small">
-
-Users are responsible for complying with applicable laws and platform terms of service.
-
-</div>
+OSINTCLAW only searches publicly available information from legal sources.
+<br>
+Users are responsible for complying with local laws and platform terms of service.
 
 </footer>
+
 
 </body>
 </html>
