@@ -12,163 +12,291 @@
 <style>
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Pixelify Sans", monospace !important;
-    font-weight: 400;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Pixelify Sans", monospace !important;
+    font-weight:400;
 }
 
 body {
-    min-height: 100vh;
-    background: #000;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
+    min-height:100vh;
+    background:#000;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
 }
+
+
+.topbar {
+
+    height:60px;
+    border-bottom:1px solid #222;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 35px;
+    color:#666;
+    font-size:16px;
+
+}
+
+
+.status {
+
+    display:flex;
+    gap:20px;
+
+}
+
+
+.status span {
+
+    color:#777;
+
+}
+
+
+.status .online {
+
+    color:#fff;
+
+}
+
 
 main {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
+
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+
 }
+
 
 .hero {
-    width: 100%;
-    max-width: 1100px;
-    text-align: center;
+
+    width:100%;
+    max-width:1300px;
+    text-align:center;
+
 }
+
 
 .logo {
-    width: 320px;
-    max-width: 85%;
-    height: auto;
-    margin-bottom: 70px;
-    image-rendering: pixelated;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+
+    width:420px;
+    max-width:90%;
+    height:auto;
+    margin-bottom:40px;
+    image-rendering:pixelated;
 }
 
-.subtitle {
-    color: #777;
-    font-size: 18px;
-    margin-bottom: 40px;
+
+.panel {
+
+    border:1px solid #222;
+    padding:35px;
 }
+
 
 .search-container {
-    display: flex;
-    gap: 5px;
-    width: 100%;
+
+    display:flex;
+    gap:10px;
+
 }
+
 
 .custom-select {
-    position: relative;
-    width: 220px;
+
+    position:relative;
+    width:280px;
+
 }
+
 
 .select-button {
-    width: 100%;
-    height: 55px;
-    background: #000;
-    color: #fff;
-    border: 1px solid #333;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
+
+    width:100%;
+    height:70px;
+    background:#000;
+    color:#fff;
+    border:1px solid #333;
+    cursor:pointer;
+    font-size:22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 20px;
+
 }
+
 
 .options {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    background: #000;
-    border: 1px solid #333;
-    display: none;
-    z-index: 10;
+
+    position:absolute;
+    top:75px;
+    width:100%;
+    background:#000;
+    border:1px solid #333;
+    display:none;
+    z-index:5;
+
 }
+
 
 .options div {
-    padding: 15px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 16px;
+
+    padding:18px;
+    text-align:left;
+    cursor:pointer;
+    font-size:20px;
+
 }
+
 
 .options div:hover {
-    background: #111;
+
+    background:#111;
+
 }
 
+
 .custom-select.active .options {
-    display: block;
+
+    display:block;
+
 }
+
 
 input,
 .search-button {
-    height: 55px;
-    background: #000;
-    color: #fff;
-    border: 1px solid #333;
-    font-size: 16px;
+
+    height:70px;
+    background:#000;
+    color:#fff;
+    border:1px solid #333;
+    font-size:22px;
+
 }
+
 
 input {
-    flex: 1;
-    padding: 0 20px;
+
+    flex:1;
+    padding:0 25px;
+
 }
+
 
 input::placeholder {
-    color: #555;
+
+    color:#555;
+
 }
 
+
 .search-button {
-    width: 220px;
-    cursor: pointer;
-    font-size: 18px;
+
+    width:280px;
+    cursor:pointer;
+
 }
+
 
 button:hover,
 input:hover {
-    border-color: #777;
+
+    border-color:#777;
+
 }
 
-button:focus,
-input:focus {
-    outline: none;
-    border-color: #fff;
-}
 
 .search-button:hover {
-    background: #111;
+
+    background:#111;
+
 }
 
-.disclaimer {
-    text-align: center;
-    padding: 30px 20px;
-    color: #555;
-    font-size: 13px;
-    border-top: 1px solid #1c1c1c;
+
+
+.info-grid {
+
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+
 }
+
+
+.card {
+
+    border:1px solid #222;
+    padding:18px;
+    color:#666;
+    font-size:15px;
+
+}
+
+
+.card b {
+
+    display:block;
+    color:#fff;
+    font-size:20px;
+    margin-bottom:5px;
+
+}
+
+
+
+footer {
+
+    border-top:1px solid #222;
+    padding:20px;
+    text-align:center;
+    color:#555;
+    font-size:14px;
+
+}
+
 
 @media(max-width:800px){
 
-    .search-container {
-        flex-direction: column;
-    }
+.search-container {
 
-    .custom-select,
-    input,
-    .search-button {
-        width: 100%;
-    }
+    flex-direction:column;
 
 }
+
+
+.custom-select,
+input,
+.search-button {
+
+    width:100%;
+
+}
+
+
+.info-grid {
+
+    grid-template-columns:1fr;
+
+}
+
+
+.topbar {
+
+    padding:0 15px;
+
+}
+
+}
+
 
 </style>
 
@@ -178,7 +306,26 @@ input:focus {
 <body>
 
 
+<header class="topbar">
+
+<div>
+osintclaw // intelligence terminal
+</div>
+
+
+<div class="status">
+
+<span class="online">● online</span>
+<span>secure mode</span>
+
+</div>
+
+</header>
+
+
+
 <main>
+
 
 <section class="hero">
 
@@ -190,14 +337,21 @@ class="logo"
 >
 
 
+
+<div class="panel">
+
+
 <div class="search-container">
 
 
 <div class="custom-select">
 
+
 <button class="select-button">
+
 username
 <span>▼</span>
+
 </button>
 
 
@@ -211,18 +365,51 @@ username
 
 </div>
 
+
 </div>
 
 
-<input
-type="text"
-placeholder="input search query..."
->
+<input placeholder="input search query...">
 
 
 <button class="search-button">
+
 search
+
 </button>
+
+
+</div>
+
+
+<div class="info-grid">
+
+
+<div class="card">
+
+<b>sources</b>
+public databases
+
+</div>
+
+
+<div class="card">
+
+<b>mode</b>
+osint scan
+
+</div>
+
+
+<div class="card">
+
+<b>status</b>
+ready
+
+</div>
+
+
+</div>
 
 
 </div>
@@ -230,10 +417,12 @@ search
 
 </section>
 
+
 </main>
 
 
-<footer class="disclaimer">
+
+<footer>
 
 osintclaw only searches publicly available information from legal sources.
 <br>
@@ -242,36 +431,41 @@ users are responsible for complying with local laws and platform terms of servic
 </footer>
 
 
+
 <script>
 
-const select = document.querySelector(".custom-select");
-const button = document.querySelector(".select-button");
-const options = document.querySelectorAll(".options div");
+
+const select=document.querySelector(".custom-select");
+const button=document.querySelector(".select-button");
+const options=document.querySelectorAll(".options div");
 
 
-button.onclick = (e) => {
-    e.stopPropagation();
-    select.classList.toggle("active");
+button.onclick=(e)=>{
+
+e.stopPropagation();
+select.classList.toggle("active");
+
 };
 
 
-options.forEach(option => {
+options.forEach(option=>{
 
-    option.onclick = () => {
+option.onclick=()=>{
 
-        button.innerHTML = option.textContent + "<span>▼</span>";
-        select.classList.remove("active");
+button.innerHTML=option.textContent+"<span>▼</span>";
+select.classList.remove("active");
 
-    };
+};
 
 });
 
 
-document.onclick = () => {
+document.onclick=()=>{
 
-    select.classList.remove("active");
+select.classList.remove("active");
 
 };
+
 
 </script>
 
